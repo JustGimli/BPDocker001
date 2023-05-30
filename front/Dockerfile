@@ -7,7 +7,7 @@ RUN npm i .
 
 ARG CACHEBUST=1
 
-RUN npm i serve
+RUN npm install -g serve
 
 CMD [ "serve", "-s", "build"]
 
