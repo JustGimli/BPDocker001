@@ -34,5 +34,4 @@ RUN chmod +x ${DockerHome}/celery.sh
 
 WORKDIR ${DockerHome}
 
-RUN python3 manage.py collectstatic
 
