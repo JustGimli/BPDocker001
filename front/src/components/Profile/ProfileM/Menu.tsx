@@ -5,8 +5,9 @@ import { NavLink } from "react-router-dom";
 export const HeaderMenu = () => {
     return (
         <Nav
-            className="flex-column text-center h-100"
+            className="flex-column text-center"
             style={{
+                height: "91vh",
                 boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)",
                 backgroundColor: "#FFFFFF",
             }}
@@ -39,9 +40,6 @@ export const HeaderMenu = () => {
                     </Container>
                 ))}
             </Container>
-            <Button size="sm" variant="">
-                <AiOutlineLeft />
-            </Button>
         </Nav>
     );
 };
@@ -72,7 +70,7 @@ const arrayText = [
         label: "Каналы",
     },
     {
-        name: "stat",
+        name: "stats",
         label: "Статистика",
     },
     {

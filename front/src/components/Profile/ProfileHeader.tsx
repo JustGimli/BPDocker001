@@ -27,7 +27,7 @@ export default function ProfileHeader() {
                     backgroundColor: "#FFFFFF",
                 }}
             >
-                <Container fluid>
+                <Container fluid className="m-0 p-0">
                     {(isTablet || isDesktop) && (
                         <Navbar.Brand style={isTablet ? { width: "10%" } : {}}>
                             <Logo />
@@ -46,7 +46,7 @@ export default function ProfileHeader() {
                         </Container>
                         {isMobile && <HiMenu size={30} onClick={handleClick} />}
                     </Col>
-                    <Col md={2}>
+                    <Col>
                         <Container fluid>
                             <Row>
                                 <Col md={5}>

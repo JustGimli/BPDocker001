@@ -11,8 +11,6 @@ class Bot(models.Model):
     lang = models.CharField(_('language'), default='RUS',
                             max_length=5, blank=True)
     desc = models.CharField(_('description'), blank=True, max_length=512)
-    start_mes = models.TextField(
-        _('start message'), blank=True, max_length=512)
     admin = models.ForeignKey(
         User, on_delete=models.CASCADE)
     date_create = models.DateField(_("date create"), auto_now_add=True)
@@ -24,3 +22,12 @@ class Bot(models.Model):
     class Meta:
         verbose_name = 'bot'
         verbose_name_plural = 'bots'
+
+
+class BotSettings(models.Model):
+    bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
+    primary = models.BooleanField(_('primary'), default=True)
+    secondary = models.BooleanField(_('secondary'), default=True)
+    start_message = models.TextField(
+        _('start message'), blank=True, max_length=512)
+    is_active = models.BooleanField(_('is active'), default=False)

@@ -88,7 +88,6 @@ const Setting = () => {
                         <option value="option2">Английский</option>
                     </Form.Select>
                     <Form.Label>
-                        {" "}
                         <Row className="mx-2 fs-6">
                             <Col>
                                 Язык бота, на котором он будет общаться. Можно
@@ -97,7 +96,6 @@ const Setting = () => {
                         </Row>
                     </Form.Label>
                 </Form.Group>
-                <Container></Container>
             </Form>
         </Container>
     );

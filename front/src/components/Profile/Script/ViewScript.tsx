@@ -1,6 +1,5 @@
-import { Container } from "react-bootstrap";
-import { NItem } from "../../generalComp/NItem";
+import { ListScript } from "./components/ListScript";
 
 export const ViewScript = () => {
-    return <NItem text="Список сценариев пуст" />;
+    return <ListScript />;
 };

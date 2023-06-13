@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from corsheaders.defaults import default_headers
 from pathlib import Path
 import os
 
@@ -25,34 +26,45 @@ SECRET_KEY = 'django-insecure-c7+610)$6xd6(r&f*5925w^xnirad!d6k%up^o2^titrm2$$$(
 
 
 DEBUG = os.environ.get('DEBUG', default=False)
+
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
 
 if DEBUG:
     INTERNAL_IPS = ["127.0.0.1",]  # debug_toolbar
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST').split(' ')
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST', '127.0.0.1').split(' ')
+ALLOWED_HOSTS = ['*']
 
-
-# Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    "corsheaders",
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'debug_toolbar',
     'rest_framework',
     'djoser',
-    "corsheaders",
     'django_celery_results',
     'apps.users.apps.UsersConfig',
     'apps.rating.apps.RatingConfig',
-    'apps.bots.apps.BotsConfig'
+    'apps.bots.apps.BotsConfig',
+    'apps.chats.apps.ChatsConfig',
+    'apps.projects.apps.ProjectsConfig',
+    'apps.payment.apps.PaymentConfig',
 ]
 
+
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "config.middleware.SetRefreshTokenMiddleWare",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -83,7 +96,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = "config.asgi.application"
+# WSGI_APPLICATION = 'config.wsgi.application'
 
 
 DATABASES = {
@@ -122,23 +136,23 @@ REST_FRAMEWORK = {
     ),
 }
 
-CELERY_CACHE_BACKEND = 'default'
-
-CELERY_BROKER_URL = os.environ.get("BROKER_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get(
-    "RESULT_BACKEND", "redis://localhost:6379/1")
 
 # REDIS
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': CELERY_BROKER_URL
+        'LOCATION': 'redis://' + os.environ.get('REDIS_HOST', '127.0.0.1') + ':6379/1',
     }
 }
 
 
 # CELERY
 
+CELERY_CACHE_BACKEND = 'default'
+
+CELERY_BROKER_URL = os.environ.get("BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get(
+    "RESULT_BACKEND", "redis://localhost:6379/0")
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -152,10 +166,10 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -170,13 +184,13 @@ SIMPLE_JWT = {
 
 # djoser
 
-# DJOSER = {
-#     'TOKEN_MODEL': 'apps.users.djoserJWT.custom_refresh_jwt_token',
-#     'TOKEN_COOKIE_HTTPONLY': True,
-#     'TOKEN_COOKIE_NAME': 'refresh_token',
-#     'TOKEN_COOKIE_SECURE': False,  # Установите True, если используете HTTPS
-#     # Lax' или 'Strict', если используете HTTPS
-#     'TOKEN_COOKIE_SAMESITE': 'None',
-#     'TOKEN_COOKIE_PATH': '/',
-#     'TOKEN_COOKIE_DOMAIN': None,
-# }
+DJOSER = {
+    # 'TOKEN_MODEL': 'api.v1.auth.views.Token',
+    # # 'TOKEN_COOKIE_HTTPONLY': True,
+    # 'TOKEN_COOKIE_NAME': 'refresh',
+    # 'TOKEN_COOKIE_SECURE': False,  # Установите True, если используете HTTPS
+    # # Lax' или 'Strict', если используете HTTPS
+    # 'TOKEN_COOKIE_SAMESITE': 'None',
+    # 'TOKEN_COOKIE_PATH': '/',
+    # 'TOKEN_COOKIE_DOMAIN': None,
+}

@@ -7,25 +7,27 @@ import { useMediaQuery } from "react-responsive";
 
 export const Profile = () => {
     const isMobile = useMediaQuery({ maxWidth: 767 });
+    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1090 });
 
     return (
         <Container
             fluid
-            className={"m-0 p-0 h-100"}
+            className="m-0 p-0"
             style={{
+                // minHeight: "100%",
                 backgroundColor: "#F9FAFC",
-                overflow: !isMobile ? "hidden" : "",
+                overflow: !(isMobile || isTablet) ? "" : "",
             }}
         >
             <ProfileHeader />
-            <Container className="h-100 d-flex m-0 p-0" fluid>
+            <Container className="d-flex m-0 p-0" fluid>
                 <Row>
                     <Col>
                         <ProfileMenu />
                     </Col>
                 </Row>
                 <Row
-                    className={`d-block mt-4 ${
+                    className={`d-block  ${
                         isMobile ? "mx-2" : "mx-5"
                     }  pt-3 w-75`}
                 >

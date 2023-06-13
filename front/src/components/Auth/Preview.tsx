@@ -3,7 +3,7 @@ import Carousel from "react-bootstrap/Carousel";
 import { Col, Container, Row } from "react-bootstrap";
 
 import { useEffect, useState } from "react";
-import { $auth } from "../../utils/api/api";
+import axios from "axios";
 
 interface IData {
     id: number;
@@ -19,13 +19,17 @@ export default function Preview() {
     const [data, setData] = useState<Array<IData> | null>(null);
 
     useEffect(() => {
-        $auth.get("rating/").then((resp: any) => {
-            if (resp.data) {
-                if (resp.data.length > 0) {
-                    setData(resp.data);
+        axios
+            .get(`${process.env.REACT_APP_BASE_URL}rating/`, {
+                withCredentials: true,
+            })
+            .then((resp: any) => {
+                if (resp.data) {
+                    if (resp.data.length > 0) {
+                        setData(resp.data);
+                    }
                 }
-            }
-        });
+            });
     }, []);
 
     return (

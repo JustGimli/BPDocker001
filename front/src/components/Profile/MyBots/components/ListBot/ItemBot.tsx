@@ -1,6 +1,5 @@
 import { Badge, Col, Container, Row } from "react-bootstrap";
 import { SlPeople } from "react-icons/sl";
-import { useMediaQuery } from "react-responsive";
 
 interface IBot {
     name: string;
@@ -23,7 +22,7 @@ export const ItemBot = ({ name, desc, date_update }: IBot) => {
     };
 
     const convertedDateTime = convertDateTime(date_update);
-    const isMobile = useMediaQuery({ maxWidth: 767 });
+    // const isMobile = useMediaQuery({ maxWidth: 767 });
 
     return (
         <Container

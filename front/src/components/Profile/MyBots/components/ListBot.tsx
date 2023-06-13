@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import IBot from "../../../../utils/interface";
+import { IBot } from "../../../../utils/interface";
 import { $api } from "../../../../utils/api/api";
 import { ItemBot } from "./ListBot/ItemBot";
 import { Container } from "react-bootstrap";
@@ -11,7 +11,7 @@ export const ListBot = () => {
     useEffect(() => {
         (async () => {
             try {
-                const data = await $api("bots");
+                const data = await $api("/bots");
                 const responseData: Array<IBot> = data.data;
                 setListBot(responseData);
             } catch (error) {}
@@ -20,11 +20,12 @@ export const ListBot = () => {
 
     const Item = (
         <Container
-            className="d-flex ustify-content-between flex-row flex-wrap "
+            className="d-flex justify-content-between flex-row flex-wrap "
             fluid
         >
             {listBot?.map((item, ind) => (
                 <ItemBot
+                    key={item.id}
                     name={item.name}
                     desc={item.desc}
                     date_update={item.date_update}

@@ -1,7 +1,5 @@
-import { Form, Button, Container, Col, Carousel, Row } from "react-bootstrap";
+import { Form, Button, Container, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import Preview from "../../components/Auth/Preview";
-import { AiFillStar } from "react-icons/ai";
 import AuthHeader from "../../components/Auth/AuthHeader";
 
 export default function Recover() {

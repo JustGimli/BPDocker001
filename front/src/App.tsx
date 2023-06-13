@@ -1,22 +1,19 @@
 import "./App.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { privateRoutes, publicRoutes } from "./utils/Path";
+import { All } from "./utils/Path";
 import Error from "./pages/Error";
 import { observer } from "mobx-react-lite";
-import User from "./store/User";
+import { useContext } from "react";
+import { Context } from ".";
 
 export const App = observer(() => {
+    const { user } = useContext(Context);
+
     const renderRoutes = () => {
-        if (User.data.isAuth) {
-            return privateRoutes.map(({ path, Component }) => (
-                <Route key={path} path={path} element={<Component />} />
-            ));
-        } else {
-            return publicRoutes.map(({ path, Component }) => (
-                <Route key={path} path={path} element={<Component />} />
-            ));
-        }
+        return All.map(({ path, Component }) => (
+            <Route key={path} path={path} element={<Component />} />
+        ));
     };
     return (
         <Routes>

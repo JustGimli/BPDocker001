@@ -1,0 +1,35 @@
+.chat-message {
+    background-color: #F0F0F0;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    max-width: 80%;
+    position: relative;
+}
+
+.chat-message::before {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent #F0F0F0 transparent transparent;
+    top: 0;
+    left: -10px;
+}
+
+.chat-message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.chat-message-timestamp {
+    color: gray;
+    font-size: 0.8em;
+}
+
+.chat-message-body {
+    font-size: 0.9em;
+}

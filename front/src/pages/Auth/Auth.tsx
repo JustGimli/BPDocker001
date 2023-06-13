@@ -1,17 +1,18 @@
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import Preview from "../../components/Auth/Preview";
-import { $api, $auth } from "../../utils/api/api";
-import { useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import AuthHeader from "../../components/Auth/AuthHeader";
-import User from "../../store/User";
+import { Context } from "../../index";
+import { observer } from "mobx-react-lite";
+import { $api } from "../../utils/api/api";
 
 interface ILogin {
     email: string;
     password: string;
 }
 
-export const AuthPage = (props: any) => {
+export const AuthPage = observer((props: any) => {
     const [form, setForm] = useState<ILogin>({
         email: "",
         password: "",
@@ -19,66 +20,51 @@ export const AuthPage = (props: any) => {
     const iptEmail = useRef<HTMLInputElement | null>(null);
     const iptPass = useRef<HTMLInputElement | null>(null);
     const navigate = useNavigate();
+    const { user } = useContext(Context);
 
-    const [emailError, setEmailError] = useState<boolean | undefined>();
-    const [passwordError, setPasswordError] = useState<any>("");
+    useEffect(() => {
+        async function FetchData() {
+            if (localStorage.getItem("token")) {
+                await user.checkAuth();
+            }
+
+            if (user.isAuth) {
+                navigate("/profile");
+            }
+        }
+        FetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        $auth
-            .post("auth/users/", {
-                email: form.email,
-                password: form.password,
-            })
-            .then((respUser) => {
-                $api.post("auth/jwt/create/", {
-                    email: form.email,
-                    password: form.password,
-                }).then((resp) => {
-                    User.setAuth(true);
-                    User.setAsses(resp.data.access);
-                    User.setRef(resp.data.refresh);
-                });
+        const { email, password } = form;
 
-                navigate("/profile", { replace: true });
-            })
-            .catch((er) => {
-                const error = er.response.data;
+        if (email !== "" && password !== "") {
+            await user.login(email, password);
+        }
 
-                if (error.email) {
-                    if (
-                        error.email[0] ===
-                        "user with this email already exists."
-                    ) {
-                        console.log("eror user exist");
-                        $auth
-                            .post("auth/jwt/create/", {
-                                email: form.email,
-                                password: form.password,
-                            })
-                            .then((resp) => {
-                                User.setAuth(true);
-                                User.setAsses(resp.data.access);
-                                User.setRef(resp.data.refresh);
-                                navigate("/profile", { replace: true });
-                            })
-                            .catch((error) => {
-                                if (error.data.email) {
-                                    setEmailError(error.data.email);
-                                }
-                            });
-                    } else setEmailError(error.data.email);
+        if (user.isAuth) {
+            try {
+                const data = await $api.get("/projects");
+
+                if (data.data.length === 0) {
+                    try {
+                        const data = await $api.post("/projects/create/");
+                    } catch (err) {
+                        console.log(err);
+                    }
                 }
-
-                if (error.password) {
-                    setPasswordError(error.password[0]);
-                }
-            });
+            } catch (err) {
+                console.log(err);
+            }
+            navigate("profile/");
+        }
 
         setForm({
             email: "",
@@ -113,17 +99,20 @@ export const AuthPage = (props: any) => {
                                                     onChange={handleForm}
                                                     className="border border-primary"
                                                     type="email"
-                                                    placeholder="  Введите адрес электронной почты"
-                                                    style={{ height: 56 }}
+                                                    placeholder={
+                                                        user.emailError
+                                                            ? user.emailError
+                                                            : "  Введите адрес электронной почты"
+                                                    }
+                                                    style={{
+                                                        height: 56,
+                                                    }}
                                                     name="email"
                                                     ref={iptEmail}
-                                                    isInvalid={emailError}
+                                                    isInvalid={Boolean(
+                                                        user.emailError
+                                                    )}
                                                 />
-                                                {emailError && (
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {emailError}
-                                                    </Form.Control.Feedback>
-                                                )}
                                             </Form.Group>
                                         </div>
                                         <div className="mb-3">
@@ -133,19 +122,33 @@ export const AuthPage = (props: any) => {
                                                     name="password"
                                                     className="border border-primary"
                                                     type="password"
-                                                    placeholder="  Придумайте или введите свой пароль"
+                                                    placeholder={
+                                                        user.passwordError
+                                                            ? user.passwordError
+                                                            : "  Придумайте или введите свой пароль"
+                                                    }
                                                     style={{ height: 56 }}
                                                     onChange={handleForm}
                                                     ref={iptPass}
-                                                    isInvalid={passwordError}
+                                                    isInvalid={Boolean(
+                                                        user.passwordError
+                                                    )}
                                                 />
-                                                {passwordError && (
+
+                                                {user.detail && (
                                                     <Form.Control.Feedback type="invalid">
-                                                        {passwordError}
+                                                        {user.detail}
                                                     </Form.Control.Feedback>
                                                 )}
                                             </Form.Group>
-                                            <Row className="pt-3">
+
+                                            <Row
+                                                className={
+                                                    user.detail
+                                                        ? "pt-0"
+                                                        : "pt-3"
+                                                }
+                                            >
                                                 <Link
                                                     to="/recover"
                                                     style={{
@@ -177,4 +180,4 @@ export const AuthPage = (props: any) => {
             </Container>
         </>
     );
-};
+});

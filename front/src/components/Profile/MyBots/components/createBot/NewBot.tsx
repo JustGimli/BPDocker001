@@ -6,7 +6,9 @@ export default function NewBot() {
     const handleClick = (e: any) => {
         e.preventDefault();
         Bot.send();
+
         const form = Bot.form;
+
         $api.post("bots/create/", form, {
             headers: {
                 "Content-Type": "multipart/form-data",

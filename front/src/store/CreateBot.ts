@@ -1,6 +1,7 @@
 import {  makeAutoObservable } from "mobx";
 
 
+
 interface CreateBot {
     [key: string]: any;
         id?: number;
@@ -8,8 +9,8 @@ interface CreateBot {
         desc?: string;
         img?: Blob;
         token: string;
-        start_mes?: string;
         lang?: string,
+        start_message?: string;
     }
 
 
@@ -20,7 +21,7 @@ class Bot {
         desc: '',
         lang: '',
         token: '',
-        start_mes: '',
+        start_message: '',
     } 
     
     form = new FormData();
@@ -38,7 +39,7 @@ class Bot {
     }
     
     addStartMes(message: string) {
-        this.instance_bot.start_mes = message;
+        this.instance_bot.start_message = message;
     }
 
     addDesc(desc: string) {
@@ -54,8 +55,8 @@ class Bot {
     }
 
     send() {
-        for (const prop in this.instance_bot) {
-            this.form.append(`${prop}`, this.instance_bot[prop])
+        for (const name in this.instance_bot) {
+            this.form.append(name, this.instance_bot[name])
         }
     }
 } 

@@ -1,12 +1,48 @@
+import React, { useEffect, useState } from "react";
 import { Badge, Col, Container, Nav, NavDropdown, Row } from "react-bootstrap";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { GrDocumentText } from "react-icons/gr";
 import { useMediaQuery } from "react-responsive";
+import { $api } from "../../../utils/api/api";
+import { Project } from "../../../utils/interface";
+import ProjectComponent from "../../../store/Project";
+import { observer } from "mobx-react-lite";
 
-export const MainBar = () => {
+export const MainBar = observer(() => {
+    const [projects, setProjects] = useState<Array<Project> | null>();
     const isDesktop = useMediaQuery({ minWidth: 1090 });
     const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1090 });
-    const isMobile = useMediaQuery({ maxWidth: 767 });
+
+    const handleClick = (event: any) => {
+        if (projects) {
+            ProjectComponent.setProject(
+                projects.filter(
+                    (project) =>
+                        project.name === event.target.getAttribute("value")
+                )[0]
+            );
+        }
+    };
+
+    useEffect(() => {
+        const FetchData = async () => {
+            try {
+                const data = await $api.get("projects/");
+
+                if (data.data) {
+                    if (!ProjectComponent.project) {
+                        ProjectComponent.setProject(data.data[0]);
+                        setProjects(data.data);
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        FetchData();
+    }, []);
+
     return (
         <>
             {(isDesktop || isTablet) && (
@@ -16,23 +52,53 @@ export const MainBar = () => {
                             <Nav>
                                 <Row className="d-block">
                                     <Col>
-                                        <Nav.Item className="px-2">
+                                        <Nav.Item
+                                            className="px-2"
+                                            style={{ fontSize: "14px" }}
+                                        >
                                             проект
                                         </Nav.Item>
                                     </Col>
                                     <Col>
-                                        <NavDropdown
-                                            title="Новый проект"
-                                            id="collasible-nav-dropdown"
-                                        >
-                                            <NavDropdown.Item href="#action/3.1">
-                                                ActisTabletion
-                                            </NavDropdown.Item>
-                                            <NavDropdown.Divider />
-                                            <NavDropdown.Item href="#action/3.2">
-                                                Another action
-                                            </NavDropdown.Item>
-                                        </NavDropdown>
+                                        {projects && (
+                                            <NavDropdown
+                                                title={
+                                                    ProjectComponent.project
+                                                        ?.name || "Новый проект"
+                                                }
+                                                id="collasible-nav-dropdown"
+                                            >
+                                                {projects
+                                                    .slice(1)
+                                                    .map((project, index) => (
+                                                        <Container
+                                                            fluid
+                                                            key={index}
+                                                        >
+                                                            <NavDropdown.Item
+                                                                key={index}
+                                                                onClick={
+                                                                    handleClick
+                                                                }
+                                                                value={
+                                                                    project.name
+                                                                }
+                                                            >
+                                                                {project.name}
+                                                            </NavDropdown.Item>
+                                                            {index <
+                                                            projects.length -
+                                                                1 ? (
+                                                                <NavDropdown.Divider
+                                                                    key={
+                                                                        project.id
+                                                                    }
+                                                                />
+                                                            ) : null}
+                                                        </Container>
+                                                    ))}
+                                            </NavDropdown>
+                                        )}
                                     </Col>
                                 </Row>
                             </Nav>
@@ -91,4 +157,4 @@ export const MainBar = () => {
             )}
         </>
     );
-};
+});
