@@ -23,6 +23,7 @@ COPY req.txt .
 
 RUN pip install -r req.txt
 
+
 ARG CACHEBUST=1
 
 COPY ./app/ ${DockerHome}
@@ -32,3 +33,6 @@ RUN chmod +x ${DockerHome}/api.sh
 RUN chmod +x ${DockerHome}/celery.sh
 
 WORKDIR ${DockerHome}
+
+RUN python3 manage.py collectstatic
+
