@@ -78,6 +78,7 @@ volumes:
   django: {}
   postgres_data: {}
   frontend: {}
+  media: {}
 
 
   
