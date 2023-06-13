@@ -9,7 +9,7 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - django:/home/app/static/
       - frontend:/var/www/html
-      - ./ssl:/etc/nginx/ssl
+      - ./ssl:/etc/nginx/ssl/
     depends_on:
       - server
       - frontend
@@ -21,7 +21,7 @@ services:
     
     entrypoint: ./api.sh
     volumes:
-      - django:/home/app/static/
+      - django:/home/app/static
       - ./ssl:/ssl
     ports:
       - 8000:8000
