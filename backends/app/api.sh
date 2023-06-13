@@ -13,7 +13,7 @@ do
     sleep 3
 done
 
-until python3 manage.py collectstatic
+until python3 manage.py collectstatic --noinput
 do
     sleep 3
 done
