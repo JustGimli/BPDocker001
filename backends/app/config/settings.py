@@ -29,10 +29,17 @@ DEBUG = os.environ.get('DEBUG', default=False)
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
+SSL_CERTIFICATE = os.path.join(BASE_DIR, '/ssl/localhost.crt')
+SSL_PRIVATE_KEY = os.path.join(BASE_DIR, '/ssl/localhost.key')
 
 if DEBUG:
     INTERNAL_IPS = ["127.0.0.1",]  # debug_toolbar
+    
+    WEBAPP_URL_SCHEME = 'https'
+    WEBAPP_HTTP_PROTOCOL = 'https'
+    WEBAPP_PUBLIC_DOMAIN = 'localhost'
+    WEBAPP_SSL_CERTIFICATE = SSL_CERTIFICATE
+    WEBAPP_SSL_PRIVATE_KEY = SSL_PRIVATE_KEY
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST', '127.0.0.1').split(' ')
 ALLOWED_HOSTS = ['*']
@@ -164,6 +171,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
 
 
 STATIC_URL = 'static/'
