@@ -1,5 +1,4 @@
-import { Button, Col, Container, Nav, Row } from "react-bootstrap";
-import { AiOutlineLeft } from "react-icons/ai";
+import { Col, Container, Nav, Row } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 export const HeaderMenu = () => {

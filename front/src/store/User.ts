@@ -80,7 +80,7 @@ export default class User {
             document.cookie = `token=${response.data.refresh}; path=/;expires=${date.setTime(date.getTime() + 60 * 60 * 24 )}`
             this.setAuth(true)                
         }catch(error: any){ 
-            this.setDetail(error.response.data?.detail)
+            this.setDetail(error.response.data?.detail) 
         }   
     }
 

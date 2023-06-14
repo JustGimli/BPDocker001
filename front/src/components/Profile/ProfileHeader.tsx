@@ -68,7 +68,7 @@ export default function ProfileHeader() {
                                     <Col>
                                         <img
                                             alt="doctor"
-                                            src={require("./ProfileHeader/doctor.png")}
+                                            src={require("./ProfileHeader/static/doctor.png")}
                                         ></img>
                                     </Col>
                                 )}
@@ -77,7 +77,7 @@ export default function ProfileHeader() {
                         {isMobile && (
                             <img
                                 alt="doctor"
-                                src={require("./ProfileHeader/doctor.png")}
+                                src={require("./ProfileHeader/static/doctor.png")}
                             ></img>
                         )}
                     </Col>

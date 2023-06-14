@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge, Col, Container, Nav, NavDropdown, Row } from "react-bootstrap";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { GrDocumentText } from "react-icons/gr";
@@ -7,21 +7,16 @@ import { $api } from "../../../utils/api/api";
 import { Project } from "../../../utils/interface";
 import ProjectComponent from "../../../store/Project";
 import { observer } from "mobx-react-lite";
+import { ProjectsNavs } from "./components/projectsNavs";
 
 export const MainBar = observer(() => {
+    const [isCreatingProject, setIsCreatingProject] = useState<boolean>(false);
     const [projects, setProjects] = useState<Array<Project> | null>();
     const isDesktop = useMediaQuery({ minWidth: 1090 });
     const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1090 });
 
-    const handleClick = (event: any) => {
-        if (projects) {
-            ProjectComponent.setProject(
-                projects.filter(
-                    (project) =>
-                        project.name === event.target.getAttribute("value")
-                )[0]
-            );
-        }
+    const handleCreateProject = () => {
+        setIsCreatingProject(true);
     };
 
     useEffect(() => {
@@ -68,35 +63,20 @@ export const MainBar = observer(() => {
                                                 }
                                                 id="collasible-nav-dropdown"
                                             >
-                                                {projects
-                                                    .slice(1)
-                                                    .map((project, index) => (
-                                                        <Container
-                                                            fluid
-                                                            key={index}
-                                                        >
-                                                            <NavDropdown.Item
-                                                                key={index}
-                                                                onClick={
-                                                                    handleClick
-                                                                }
-                                                                value={
-                                                                    project.name
-                                                                }
-                                                            >
-                                                                {project.name}
-                                                            </NavDropdown.Item>
-                                                            {index <
-                                                            projects.length -
-                                                                1 ? (
-                                                                <NavDropdown.Divider
-                                                                    key={
-                                                                        project.id
-                                                                    }
-                                                                />
-                                                            ) : null}
-                                                        </Container>
-                                                    ))}
+                                                {isCreatingProject ? (
+                                                    <></>
+                                                ) : (
+                                                    <ProjectsNavs
+                                                        handler={
+                                                            handleCreateProject
+                                                        }
+                                                        currentName={
+                                                            ProjectComponent
+                                                                .project?.name
+                                                        }
+                                                        projects={projects}
+                                                    />
+                                                )}
                                             </NavDropdown>
                                         )}
                                     </Col>
@@ -145,7 +125,7 @@ export const MainBar = observer(() => {
                                     <Col>
                                         <img
                                             alt="russianFlag"
-                                            src={require("./russianFlag.png")}
+                                            src={require("./static/russianFlag.png")}
                                         />
                                     </Col>
                                     Русский

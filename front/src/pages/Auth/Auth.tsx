@@ -1,4 +1,4 @@
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import Preview from "../../components/Auth/Preview";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -77,6 +77,16 @@ export const AuthPage = observer((props: any) => {
 
     return (
         <>
+            {user.emailError || user.passwordError || user.detail ? (
+                <Alert
+                    variant="danger"
+                    style={{ position: "absolute", top: "10vh", right: "1vh" }}
+                >
+                    {user.emailError || user.passwordError || user.detail}
+                </Alert>
+            ) : (
+                <></>
+            )}
             <AuthHeader />
             <Container className="h-100" fluid>
                 <Row className="h-100">
