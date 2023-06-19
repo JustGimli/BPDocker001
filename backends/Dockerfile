@@ -14,6 +14,7 @@ ENV SQL_HOST=db
 ENV SQL_USER=postgres
 ENV SQL_PASSWORD=postgres
 ENV SQL_PORT=5432
+ENV REDIS_HOST=redis
 ENV ALLOWED_HOST='127.0.0.1 89.23.100.32'
 
 RUN pip install --upgrade pip
