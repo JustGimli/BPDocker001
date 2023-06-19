@@ -12,7 +12,7 @@ services:
       - ./nginx/botpilot.ru.key:/etc/nginx/ssl/botpilot.ru.key
       - ./nginx/ca_bundle.crt:/etc/nginx/ssl/ca_bundle.crt
       - django:/home/app/static
-      - ./front/build/:/var/www/html/
+      - ./front/build/:/var/www/html
       - media:/home/app/media
     depends_on:
       - server
