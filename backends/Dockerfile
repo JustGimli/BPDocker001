@@ -20,7 +20,7 @@ RUN pip install --upgrade pip
 
 
 COPY req.txt .
-
+RUN pip uninstall -y channels
 RUN pip install -r req.txt
 
 
