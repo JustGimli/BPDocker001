@@ -8,7 +8,7 @@ do
     sleep 3
 done
 
-until pip install channels
+until pip install channels[daphne]
 do
     echo "Waiting for db to be ready..."
     sleep 3
