@@ -1,6 +1,7 @@
 services:
   nginx: 
     image: nginx:1.25-alpine
+    
     restart: always
     ports:
       - 80:80
@@ -11,14 +12,14 @@ services:
       - ./nginx/botpilot.ru.key:/etc/nginx/ssl/botpilot.ru.key
       - ./nginx/ca_bundle.crt:/etc/nginx/ssl/ca_bundle.crt
       - django:/home/app/static
-      - ./front/build/:/usr/share/nginx/html
+      - ./front/build/:/var/www/html/
       - media:/home/app/media
     depends_on:
       - server
     
   server: 
     restart: unless-stopped
-    build: 
+    build:  
       context: ./backends/
       dockerfile: Dockerfile
     
