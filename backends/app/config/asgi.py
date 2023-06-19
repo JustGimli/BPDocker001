@@ -9,7 +9,7 @@ application = ProtocolTypeRouter(
     {
         "https": get_asgi_application(),
         "websocket": URLRouter([
-            path("api/ws/", ChatConsumer.as_asgi()),
+            path("ws/", ChatConsumer.as_asgi()),
         ])
     }
 )
