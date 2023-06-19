@@ -1,5 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
+
+from apps.projects.models import Project
 from .serializers import BotSerializer, BotSettingsSerializer
 from rest_framework.response import Response
 from apps.users.models import User
@@ -13,10 +15,17 @@ class BotView(viewsets.ModelViewSet):
     serializer_class = BotSerializer
     permission_classes = [IsAuthenticated]
 
-    def list(self, request, *args, **kwards):
+    def list(self, request, project_name, *args, **kwards):
 
-        id = User.objects.get(email=request.user).id  # request.user
-        queryset = Bot.objects.filter(admin=id)
+        user = User.objects.get(email=request.user)  # request.user
+
+        try:
+            project = Project.objects.filter(
+                name=project_name, user=user.id).first().id
+        except Project.DoesNotExist:
+            return Response(data="Must have a project id", status=status.HTTP_404_NOT_FOUND)
+
+        queryset = Bot.objects.filter(admin=user.id, project=project)
 
         if queryset.exists():
             serializer = self.get_serializer(queryset, many=True)

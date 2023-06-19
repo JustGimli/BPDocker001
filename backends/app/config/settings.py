@@ -25,21 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c7+610)$6xd6(r&f*5925w^xnirad!d6k%up^o2^titrm2$$$('
 
 
-DEBUG = os.environ.get('DEBUG', default=False)
+DEBUG = os.environ.get('DEBUG', default=True)
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-SSL_CERTIFICATE = os.path.join(BASE_DIR, '/ssl/localhost.crt')
-SSL_PRIVATE_KEY = os.path.join(BASE_DIR, '/ssl/localhost.key')
+
 
 if DEBUG:
     INTERNAL_IPS = ["127.0.0.1",]  # debug_toolbar
-    
-    WEBAPP_URL_SCHEME = 'https'
-    WEBAPP_HTTP_PROTOCOL = 'https'
-    WEBAPP_PUBLIC_DOMAIN = 'localhost'
-    WEBAPP_SSL_CERTIFICATE = SSL_CERTIFICATE
-    WEBAPP_SSL_PRIVATE_KEY = SSL_PRIVATE_KEY
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST', '127.0.0.1').split(' ')
 ALLOWED_HOSTS = ['*']
@@ -153,6 +146,16 @@ CACHES = {
 }
 
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(os.environ.get('REDIS_HOST', '127.0.0.1'), 6379)],
+        },
+    },
+}
+
+
 # CELERY
 
 CELERY_CACHE_BACKEND = 'default'
@@ -173,9 +176,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

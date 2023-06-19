@@ -5,9 +5,13 @@ from apps.chats.models import Chat, Message, Consultation
 
 
 class ChatSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(
+        source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+
     class Meta:
         model = Chat
-        exclude = ['user', 'messages', 'bot']
+        exclude = ['messages']
 
 
 class MessageSerializer(serializers.ModelSerializer):

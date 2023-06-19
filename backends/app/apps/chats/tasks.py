@@ -3,9 +3,9 @@ import docker
 
 
 @shared_task()
-def send_message(user_id, message, token="5311611984:AAE49xLBcV5aa9AMdvnm46vna6VFpM3N92Q"):
+def send_message(user_id, message, token):
     client = docker.from_env()
-
+    print(token)
     env_vars = {
         'MESSAGE': message,
         'TOKEN': token,

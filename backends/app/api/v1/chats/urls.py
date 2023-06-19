@@ -10,5 +10,6 @@ urlpatterns = [
     path('messages/<int:chat_id>/', MessageListAPI.as_view()),
     path('users/create/',
          BotUsersViewSet.as_view()),
-    path('consultations/create/', ConsultationViewSet.as_view())
+    path('consultation/create/',
+         ConsultationViewSet.as_view())
 ]

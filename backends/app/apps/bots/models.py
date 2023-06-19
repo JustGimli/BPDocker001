@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from apps.projects.models import Project
 
 from apps.users.models import User
 
@@ -15,6 +16,10 @@ class Bot(models.Model):
         User, on_delete=models.CASCADE)
     date_create = models.DateField(_("date create"), auto_now_add=True)
     date_update = models.DateTimeField(_("date updated"), auto_now=True)
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    status = models.CharField(_("status"), max_length=25, default="pending")
+    container_id = models.CharField(
+        _("container_id"), max_length=30, null=True)
 
     def __str__(self) -> str:
         return self.name + ' ' + self.token

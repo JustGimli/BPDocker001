@@ -6,5 +6,5 @@ from apps.projects.models import Project
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        exclude = ['bots']
+        fields = '__all__'
         # unique_together = ['name', 'user']

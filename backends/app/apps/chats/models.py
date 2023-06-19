@@ -11,22 +11,6 @@ class Message(models.Model):
     is_author = models.BooleanField(default=True)
 
 
-class Chat(models.Model):
-    chat_id = models.IntegerField(default=None)
-    user = models.OneToOneField(
-        User, related_name='users', on_delete=models.DO_NOTHING, null=True)
-    bot = models.OneToOneField(
-        Bot, related_name='bot', on_delete=models.DO_NOTHING, null=True)
-
-    sender_id = models.IntegerField(default=None)
-    messages = models.ManyToManyField(Message, blank=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('chat_id', 'user', 'bot')
-
-
 class BotUsers(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=64, null=True)
@@ -41,6 +25,20 @@ class BotUsers(models.Model):
 
     class Meta:
         unique_together = ('bot', 'username')
+
+
+class Chat(models.Model):
+    chat_id = models.IntegerField(default=None, unique=True)
+    expert = models.ForeignKey(
+        User, related_name='users', on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(
+        BotUsers, on_delete=models.CASCADE, null=True)
+    messages = models.ManyToManyField(Message, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('chat_id', 'user')
 
 
 class Consultation(models.Model):

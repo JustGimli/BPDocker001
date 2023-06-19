@@ -17,6 +17,6 @@ def run_bot_container(token):
 
     }
 
-    client.containers.run('bot', environment=env_vars, detach=True)
+    container = client.containers.run('bot', environment=env_vars, detach=True)
+    print(container)
     return 'bot running successfully'
- 

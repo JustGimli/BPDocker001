@@ -11,9 +11,18 @@ from .serializers import MessageSerializer, Message
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
+        await self.channel_layer.group_add(
+            'group',
+            self.channel_name
+        )
+
         await self.accept()
 
     async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            'group',
+            self.channel_name
+        )
 
         print(close_code)
 
@@ -36,7 +45,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close()
         else:
 
-            message = await self.get_chat(chat_id=chat_id, user=user, data=data.get('data', None))
+            message, token = await self.get_chat(chat_id=chat_id, user=user, data=data.get('data', None))
 
             if message:
 
@@ -49,10 +58,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
 
                 send_message.delay(
-                    user_id=chat_id, message=message.message)
+                    user_id=chat_id, message=message.message, token=token)
+
                 await self.send(text_data=json.dumps(message_data))
             else:
                 await self.close()
+
+    async def send_data_to_client(self, event):
+
+        data = event['data']
+
+        message_data = {
+            "id": data.get('message_id'),
+            "message": data.get('message_text'),
+            "is_read": False,
+            "time": data.get('message_time'),
+            "is_author": False
+        }
+
+        await self.send(text_data=json.dumps(message_data))
 
     @database_sync_to_async
     def get_user(self, access_token):
@@ -68,8 +92,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_chat(self, chat_id, user, data=None):
         try:
             chat = Chat.objects.get(chat_id=chat_id)
+            token = chat.user.bot.token
 
-            if chat.user != user:
+            if chat.expert != user:
                 return None
 
             serializer = MessageSerializer(data=data)
@@ -78,7 +103,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message = Message.objects.create(**serializer.validated_data)
             chat.messages.add(message)
 
-            return message
+            return message, token
 
-        except (Chat.DoesNotExist, Exception):
+        except (Chat.DoesNotExist, Exception) as e:
+            print(e)
             return None
