@@ -32,6 +32,7 @@ COPY ./app/ ${DockerHome}
 
 RUN chmod +x ${DockerHome}/api.sh
 RUN chmod +x ${DockerHome}/celery.sh
+RUN chmod +x ${DockerHome}/sockets.sh
 
 WORKDIR ${DockerHome}
 
