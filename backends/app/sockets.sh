@@ -1,3 +1,7 @@
+#!/bin/sh
+
+
+
 until python3 manage.py makemigrations
 do
     echo "Waiting for db to be ready..."
