@@ -1,15 +1,17 @@
-import os
-from django.urls import path, include
 from channels.routing import ProtocolTypeRouter, URLRouter
+
 from django.core.asgi import get_asgi_application
-from api.v1.chats.consumers import ChatConsumer
+django_asgi_app = get_asgi_application()
+from  api.v1.chats.sockets import websocket_urlpatterns
+
+
 
 
 application = ProtocolTypeRouter(
     {
-        "http": get_asgi_application(),
+        "http": django_asgi_app,
         "websocket": URLRouter([
-            path("ws/", ChatConsumer.as_asgi()),
+            websocket_urlpatterns
         ])
     }
 )
