@@ -1,0 +1,3 @@
+[submodule "front/BPClientLending"]
+	path = front/BPClientLending
+	url = https://github.com/JustGimli/BPClientLending.git
