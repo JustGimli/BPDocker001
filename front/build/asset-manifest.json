@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.bd49c48c.css",
-    "main.js": "/static/js/main.b6e92939.js",
-    "static/media/bro.png": "/static/media/bro.5fb052274cf9f4232ada.png",
-    "static/media/not.mp3": "/static/media/not.cad5869a048970a7d4d6.mp3",
-    "static/media/BigBot.png": "/static/media/BigBot.b3a3a21e080829aee727.png",
-    "index.html": "/index.html",
-    "main.bd49c48c.css.map": "/static/css/main.bd49c48c.css.map",
-    "main.b6e92939.js.map": "/static/js/main.b6e92939.js.map"
+    "main.css": "https://botpilot.ru/static/css/main.bd49c48c.css",
+    "main.js": "https://botpilot.ru/static/js/main.dedd438b.js",
+    "static/media/bro.png": "https://botpilot.ru/static/media/bro.5fb052274cf9f4232ada.png",
+    "static/media/not.mp3": "https://botpilot.ru/static/media/not.cad5869a048970a7d4d6.mp3",
+    "static/media/BigBot.png": "https://botpilot.ru/static/media/BigBot.b3a3a21e080829aee727.png",
+    "index.html": "https://botpilot.ru/index.html",
+    "main.bd49c48c.css.map": "https://botpilot.ru/static/css/main.bd49c48c.css.map",
+    "main.dedd438b.js.map": "https://botpilot.ru/static/js/main.dedd438b.js.map"
   },
   "entrypoints": [
     "static/css/main.bd49c48c.css",
-    "static/js/main.b6e92939.js"
+    "static/js/main.dedd438b.js"
   ]
 }
