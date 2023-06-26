@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "https://botpilot.ru/static/css/main.bd49c48c.css",
-    "main.js": "https://botpilot.ru/static/js/main.fb2e5ca3.js",
+    "main.js": "https://botpilot.ru/static/js/main.8b03ccb9.js",
     "static/media/bro.png": "https://botpilot.ru/static/media/bro.5fb052274cf9f4232ada.png",
     "static/media/not.mp3": "https://botpilot.ru/static/media/not.cad5869a048970a7d4d6.mp3",
     "static/media/BigBot.png": "https://botpilot.ru/static/media/BigBot.b3a3a21e080829aee727.png",
     "index.html": "https://botpilot.ru/index.html",
     "main.bd49c48c.css.map": "https://botpilot.ru/static/css/main.bd49c48c.css.map",
-    "main.fb2e5ca3.js.map": "https://botpilot.ru/static/js/main.fb2e5ca3.js.map"
+    "main.8b03ccb9.js.map": "https://botpilot.ru/static/js/main.8b03ccb9.js.map"
   },
   "entrypoints": [
     "static/css/main.bd49c48c.css",
-    "static/js/main.fb2e5ca3.js"
+    "static/js/main.8b03ccb9.js"
   ]
 }
