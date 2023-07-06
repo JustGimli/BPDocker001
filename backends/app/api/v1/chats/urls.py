@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import WebHooks, BotInfoHandler, ChatsViewSet, MessageListAPI, BotUsersViewSet, ConsultationViewSet
+from .views import  BotInfoHandler, ChatsViewSet, MessageListAPI, WebHooks
 
 urlpatterns = [
     path('', WebHooks.as_view()),
@@ -8,8 +8,6 @@ urlpatterns = [
     path('list/', ChatsViewSet.as_view({'get': 'list'})),
     path("create/", ChatsViewSet.as_view({'post': 'create'})),
     path('messages/<int:chat_id>/', MessageListAPI.as_view()),
-    path('users/create/',
-         BotUsersViewSet.as_view()),
-    path('consultation/create/',
-         ConsultationViewSet.as_view())
+    
+
 ]

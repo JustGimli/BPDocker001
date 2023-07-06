@@ -1,16 +1,17 @@
 {
   "files": {
-    "main.css": "https://botpilot.ru/static/css/main.5fa25f29.css",
-    "main.js": "https://botpilot.ru/static/js/main.a9197cb3.js",
+    "main.css": "https://botpilot.ru/static/css/main.0e22506f.css",
+    "main.js": "https://botpilot.ru/static/js/main.dba3bbd3.js",
     "static/media/bro.png": "https://botpilot.ru/static/media/bro.5fb052274cf9f4232ada.png",
+    "static/media/User-avatar.png": "https://botpilot.ru/static/media/User-avatar.3817e3f52dd067cee0b8.png",
     "static/media/not.mp3": "https://botpilot.ru/static/media/not.cad5869a048970a7d4d6.mp3",
     "static/media/BigBot.png": "https://botpilot.ru/static/media/BigBot.b3a3a21e080829aee727.png",
     "index.html": "https://botpilot.ru/index.html",
-    "main.5fa25f29.css.map": "https://botpilot.ru/static/css/main.5fa25f29.css.map",
-    "main.a9197cb3.js.map": "https://botpilot.ru/static/js/main.a9197cb3.js.map"
+    "main.0e22506f.css.map": "https://botpilot.ru/static/css/main.0e22506f.css.map",
+    "main.dba3bbd3.js.map": "https://botpilot.ru/static/js/main.dba3bbd3.js.map"
   },
   "entrypoints": [
-    "static/css/main.5fa25f29.css",
-    "static/js/main.a9197cb3.js"
+    "static/css/main.0e22506f.css",
+    "static/js/main.dba3bbd3.js"
   ]
 }

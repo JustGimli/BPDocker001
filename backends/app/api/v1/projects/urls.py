@@ -1,9 +1,9 @@
 from rest_framework.urls import path
-from .views import ProgectView
+from .views import ProgectView, ProjectsSettingsViews
 
 
 urlpatterns = [
-    path('', ProgectView.as_view({'get': 'list'})),
-    path('create/', ProgectView.as_view({'post': 'create'})),
-    path('delete/', ProgectView.as_view({'post': 'destroy'}))
+    path('create/', ProjectsSettingsViews.as_view({'post': 'create'})),
+    path('delete/', ProgectView.as_view({'post': 'destroy'})),
+    path('list/full/', ProjectsSettingsViews.as_view({'get': 'list'}))
 ]

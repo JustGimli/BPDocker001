@@ -13,9 +13,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateField(_('date joined'), auto_now_add=True)
     is_staff = models.BooleanField(_('is staff'), default=False)
     is_superuser = models.BooleanField(_('is super user'), default=False)
-    is_email_validate = models.BooleanField(_('valid email'), default=False)
+    # is_email_validate = models.BooleanField(_('valid email'), default=False)
     is_active = models.BooleanField(_('active'), default=True)
-
+    oferta = models.BooleanField(_('accepted'), default=True)
+    balance = models.PositiveBigIntegerField(_('balance'), default=0)
+    
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
@@ -23,3 +25,5 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         return self.email
+    
+

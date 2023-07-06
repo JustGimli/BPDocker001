@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.users.models import User
-from apps.chats.models import BotUsers, Consultation
+from apps.chats.models import BotUsers
 
 from django.utils import timezone
 from django.db.models.functions import ExtractDay, ExtractMonth

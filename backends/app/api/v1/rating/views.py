@@ -1,8 +1,9 @@
 from rest_framework import viewsets, status
+from apps.bots.tasks import get_consultations
 from apps.rating.models import Rating
 from .serializers import RatingSerialisers
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from apps.bots.tasks import get_fio_id
 
 
 class RatingView(viewsets.ViewSet):

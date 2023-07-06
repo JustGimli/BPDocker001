@@ -1,5 +1,5 @@
 from django.db import models
-from apps.chats.models import Consultation
+from apps.consultations.models import Consultation
 from apps.users.models import User
 
 

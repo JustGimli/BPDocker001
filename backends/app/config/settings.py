@@ -35,6 +35,7 @@ if DEBUG:
     INTERNAL_IPS = ["127.0.0.1",]  # debug_toolbar
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST', '127.0.0.1').split(' ')
+# 185.59.216.0/24 (185.59.216.1 - 185.59.216.254)
 ALLOWED_HOSTS = ['*']
 
 
@@ -60,6 +61,8 @@ INSTALLED_APPS = [
     'apps.chats.apps.ChatsConfig',
     'apps.projects.apps.ProjectsConfig',
     'apps.payment.apps.PaymentConfig',
+    'apps.consultations.apps.ConsultationConfig',
+    'apps.botusers.apps.BotusersConfig'
 ]
 
 
@@ -193,14 +196,24 @@ SIMPLE_JWT = {
 
 
 # djoser
-
+    
 DJOSER = {
-    # 'TOKEN_MODEL': 'api.v1.auth.views.Token',
-    # # 'TOKEN_COOKIE_HTTPONLY': True,
-    # 'TOKEN_COOKIE_NAME': 'refresh',
-    # 'TOKEN_COOKIE_SECURE': False,  # Установите True, если используете HTTPS
-    # # Lax' или 'Strict', если используете HTTPS
-    # 'TOKEN_COOKIE_SAMESITE': 'None',
-    # 'TOKEN_COOKIE_PATH': '/',
-    # 'TOKEN_COOKIE_DOMAIN': None,
+    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': 'activate/{uid}/{token}/',
+    'SERIALIZERS': {},
+     "EMAIL": {
+        "activation": "apps.users.email.ActivationEmail" 
+    }
 }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'help@botpilot.ru'
+EMAIL_HOST_PASSWORD='4vusP41A2fNTdtgRC8bg'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# EMAIL_HOST_PASSWORD = 'gA?R2YIpuyh5'

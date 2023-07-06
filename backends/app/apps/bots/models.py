@@ -17,9 +17,6 @@ class Bot(models.Model):
     date_create = models.DateField(_("date create"), auto_now_add=True)
     date_update = models.DateTimeField(_("date updated"), auto_now=True)
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    status = models.CharField(_("status"), max_length=25, default="pending")
-    container_id = models.CharField(
-        _("container_id"), max_length=30, null=True)
 
     def __str__(self) -> str:
         return self.name + ' ' + self.token
@@ -31,8 +28,10 @@ class Bot(models.Model):
 
 class BotSettings(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
-    primary = models.BooleanField(_('primary'), default=True)
-    secondary = models.BooleanField(_('secondary'), default=True)
     start_message = models.TextField(
         _('start message'), blank=True, max_length=512)
-    is_active = models.BooleanField(_('is active'), default=False)
+    status = models.CharField(_("status"), max_length=25, default="pending")
+    container_id = models.CharField(
+        _("container_id"), max_length=128, null=True)
+    params = models.JSONField(_("params"), null=True)
+    

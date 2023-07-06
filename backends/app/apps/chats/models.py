@@ -1,34 +1,20 @@
 from django.db import models
-
 from apps.users.models import User
-from apps.bots.models import Bot
+from apps.botusers.models import  BotUsers
 
 
 class Message(models.Model):
-    message = models.CharField(max_length=512)
+    text = models.CharField(max_length=512, default="", blank=True)
+    document = models.FileField(upload_to='messages/', blank=True, null=True)
+    photo = models.ImageField(upload_to='messages/', blank=True, null=True)
     is_read = models.BooleanField(default=False)
     time = models.DateTimeField(auto_now_add=True)
     is_author = models.BooleanField(default=True)
 
 
-class BotUsers(models.Model):
-    bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=64, null=True)
-    last_name = models.CharField(max_length=64, null=True)
-    username = models.CharField(max_length=64)
-    registration_date = models.DateTimeField(auto_now_add=True)
-    last_interation_date = models.DateTimeField(null=True, auto_now=True)
-    total_messages_recieved = models.PositiveIntegerField(default=0)
-    total_messages_sent = models.PositiveIntegerField(default=0)
-    is_have_consultation = models.BooleanField(default=False)
-    phone = models.CharField(max_length=15, null=True)
-
-    class Meta:
-        unique_together = ('bot', 'username')
-
 
 class Chat(models.Model):
-    chat_id = models.IntegerField(default=None, unique=True)
+    chat_id = models.CharField(default=None, unique=True)
     expert = models.ForeignKey(
         User, related_name='users', on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(
@@ -36,16 +22,9 @@ class Chat(models.Model):
     messages = models.ManyToManyField(Message, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
 
     class Meta:
         unique_together = ('chat_id', 'user')
 
 
-class Consultation(models.Model):
-    user = models.ForeignKey(BotUsers, on_delete=models.CASCADE)
-    expert = models.ForeignKey(User, on_delete=models.CASCADE)
-    consultation_type = models.CharField(
-        max_length=10)
-    start_time = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField(auto_now=True)
-    message_count = models.PositiveIntegerField(default=0)

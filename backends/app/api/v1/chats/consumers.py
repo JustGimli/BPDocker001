@@ -11,8 +11,9 @@ from .serializers import MessageSerializer, Message
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
+        self.chat_id = self.get_expert_id()
         await self.channel_layer.group_add(
-            'group',
+            self.chat_id,
             self.channel_name
         )
 
@@ -20,7 +21,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
-            'group',
+            self.chat_id,
             self.channel_name
         )
 
@@ -29,13 +30,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
 
         data = json.loads(text_data)
-
-        chat_id = data.get('chat_id', None)
+        chat_id = data.get('chat', None)
 
         if chat_id is None:
             await self.close()
 
-        access_token = self.scope['query_string'].decode().split('=')[1]
+        access_token = self.assess_token()
 
         # Validate the token and retrieve the user
         user = await self.get_user(access_token)
@@ -45,38 +45,48 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close()
         else:
 
-            message, token = await self.get_chat(chat_id=chat_id, user=user, data=data.get('data', None))
+            message, token = await self.get_chat(chat_id=chat_id, user=user, data=data.get('message', None))
 
             if message:
 
                 message_data = {
-                    "id": message.id,
-                    "message": message.message,
-                    "is_read": message.is_read,
-                    "time": str(message.time),
-                    "is_author": message.is_author
+                    "message": { 
+                        "id": message.id,
+                        
+                        "is_read": message.is_read,
+                        "time": str(message.time),
+                        "is_author": message.is_author
+                    },
+                    "data": message.text,
+                    "type": 'text',
+                    "chat": chat_id
                 }
 
                 send_message.delay(
-                    user_id=chat_id, message=message.message, token=token)
+                    user_id=chat_id, message=message.text, token=token)
 
                 await self.send(text_data=json.dumps(message_data))
             else:
                 await self.close()
 
     async def send_data_to_client(self, event):
-
         data = event['data']
 
         message_data = {
-            "id": data.get('message_id'),
-            "message": data.get('message_text'),
-            "is_read": False,
-            "time": data.get('message_time'),
-            "is_author": False
+            'message': {
+                "id": data.get('message_id'),
+                "is_read": False,
+                "time": data.get('message_time'),
+                "is_author": False,
+            },
+            "data": data.get('data'),
+            "type": data.get('message_type'),
+            "chat": data.get('chat_id')
+            
         }
+        
+        await self.send(text_data=json.dumps(message_data))    
 
-        await self.send(text_data=json.dumps(message_data))
 
     @database_sync_to_async
     def get_user(self, access_token):
@@ -108,3 +118,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except (Chat.DoesNotExist, Exception) as e:
             print(e)
             return None
+
+    def get_expert_id(self):
+        return self.scope['query_string'].decode().split('&')[1].split('=')[1]
+    
+    def assess_token(self):
+        return self.scope['query_string'].decode().split('&')[0].split('=')[1]

@@ -5,6 +5,7 @@ from apps.users.models import User
 
 class BotSerializer(serializers.ModelSerializer):
     start_message = serializers.CharField(max_length=512, required=False)
+    params = serializers.JSONField(required=False)
 
     class Meta:
         model = Bot
@@ -13,10 +14,11 @@ class BotSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         data = validated_data.pop('start_message', None)
+        params = validated_data.pop('params', None)
         validated_data.update({"admin": self.context['request'].user})
         bot = self.Meta.model(**validated_data)
         bot.save()
-        BotSettings.objects.create(bot=bot, start_message=data)
+        BotSettings.objects.create(bot=bot, start_message=data, params=params)
 
         return bot
 
@@ -27,8 +29,8 @@ class BotSettingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BotSettings
-        fields = ['secondary', 'primary', 'name',
-                  'date_update', 'id', 'is_active']
+        fields = [ 'name',
+                  'date_update', 'id', 'status']
 
     def create(self, validated_data):
         validated_data.update({"admin": self.context['request'].user})
