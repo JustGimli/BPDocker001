@@ -76,7 +76,7 @@ def run_bot_container(token):
         "FIO": fio, 
         "ID": bot_id,
         "PARAMS": json.dumps(params),
-        "URL_PATH": os.environ.get('URL_PATH') + "/"
+        "URL_PATH": os.environ.get('URL_PATH', 'https://botpilot.ru/api/') 
     }
 
 

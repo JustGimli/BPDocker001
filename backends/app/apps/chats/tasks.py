@@ -34,7 +34,7 @@ def send_message(user_id, message, token, name=None, cons=False, username=None):
         'FILES': files_list,
         'USERNAME': username,
         'CONS': cons,
-        'URL_PATH': os.environ.get('URL_PATH', "https://botpilot.ru/api") + '/'
+        'URL_PATH': os.environ.get('URL_PATH', "https://botpilot.ru/api/")
     }
 
     data = {}
