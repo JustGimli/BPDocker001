@@ -80,20 +80,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-        - 5432
-
-
-  #: 
-  #   build: ./front
-  #   ports:
-  #     - 3000:3000
-
-  #   volumes:
-  #     - front:/app/build
-
-  #   depends_on:
-  #     - server
-  
+        - 5432  
 
 volumes:
   django: {}
