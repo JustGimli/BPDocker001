@@ -8,7 +8,7 @@ def calculate_signature(*args) -> str:
     """Create signature MD5.
     """
 
-    return hashlib.md5(':'.join(str(arg)  for arg in args).encode()).hexdigest()
+    return hashlib.md5(':'.join(str(arg) for arg in args).encode()).hexdigest()
 
 
 def parse_response(request: str) -> dict:
@@ -32,7 +32,8 @@ def check_signature_result(
     **kwargs
 ) -> bool:
     data = [f'{key}={value}' for key, value in kwargs.items()]
-    signature = calculate_signature(received_sum, order_number, password,*data)
+    signature = calculate_signature(
+        received_sum, order_number, password, *data)
 
     if signature.lower() == received_signature.lower():
         return True
@@ -47,8 +48,8 @@ def generate_payment_link(
     cost: decimal,  # Cost of goods, RU
     number: int | str,  # Invoice number
     description: str,  # Description of the purchase
-    is_test = 0,
-    robokassa_payment_url = 'https://auth.robokassa.ru/Merchant/Index.aspx', 
+    is_test=0,
+    robokassa_payment_url='https://auth.robokassa.ru/Merchant/Index.aspx',
     **kwargs
 ) -> str:
     """URL for redirection of the customer to the service.
@@ -62,7 +63,6 @@ def generate_payment_link(
         merchant_password_1,
         *data
     )
-
 
     data = {
         'MerchantLogin': merchant_login,
@@ -90,8 +90,9 @@ def result_payment(merchant_password_2: str, request: str) -> str:
     shp_name = request.data.get('shp_name')
     shp_userId = request.data.get('shp_userId')
     shp_username = request.data.get('shp_username')
+    shp_consultation = request.data.get('shp_consultation')
 
-    if check_signature_result(number, cost, signature, merchant_password_2, shp_id=shp_id, shp_name=shp_name, shp_userId=shp_userId, shp_username=shp_username):
+    if check_signature_result(number, cost, signature, merchant_password_2, shp_consultation=shp_consultation, shp_id=shp_id, shp_name=shp_name, shp_userId=shp_userId, shp_username=shp_username):
         return f'OK{number}',
     return "bad sign"
 
@@ -106,7 +107,6 @@ def check_success_payment(merchant_password_1: str, request: str) -> str:
     cost = param_request['OutSum']
     number = param_request['InvId']
     signature = param_request['SignatureValue']
-
 
     if check_signature_result(number, cost, signature, merchant_password_1):
         return "Thank you for using our service"

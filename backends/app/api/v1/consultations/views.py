@@ -1,6 +1,6 @@
 from rest_framework import generics, viewsets, status
 from rest_framework.response import Response
-from rest_framework.permissions import  IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.botusers.models import BotUsers
 from apps.consultations.models import Consultation, Scenario, File
 from django.db.models import F
@@ -14,20 +14,14 @@ from copy import deepcopy
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
-    permission_classes=[IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     serializer_class = ScenarioSerializerRedused
 
     def create(self, request, *args, **kwargs):
         user_id = User.objects.get(email=request.user).id
 
         try:
-            project_name = request.data.get('project')
-            project_id = Project.objects.get(name=project_name, user=user_id).id
-        except:
-            return Response(data={"error": "project name is requered"}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            bot_id = Bot.objects.get(admin=user_id, project=project_id).id
+            bot_id = Bot.objects.get(admin=user_id).id
         except Bot.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -37,15 +31,14 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             file = data.get('file')
             del data['file']
             file_obj = File.objects.create(file=file)
-        except: 
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            file_obj = None
 
-        
         data.update({"bot": bot_id})
-        data.update({ "files": file_obj.id})
+        if (file_obj):
+            data.update({"files":  file_obj.id})
 
         serializer = ScenarioSerializer(data=data)
-        print(serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -55,33 +48,21 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         user_id = User.objects.get(email=request.user).id
 
         try:
-            project_name = request.query_params.get('project')
-            project_id = Project.objects.get(name=project_name, user=user_id).id
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        try: 
-            queryset = Scenario.objects.filter(bot__project_id=project_id, bot__admin=user_id)
+            queryset = Scenario.objects.filter(bot__admin=user_id)
         except Scenario.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
         serializer = ScenarioSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def reduseList(self, request, *args, **kwargs):
         user_id = User.objects.get(email=request.user).id
-        try:
-            project_name = request.query_params.get('project')
-            project_id = Project.objects.get(name=project_name, user=user_id).id
-        except Project.DoesNotExist:
-            return Response(data={"error": "project doest not exists"},status=status.HTTP_400_BAD_REQUEST)
 
-        try: 
-            queryset = Scenario.objects.filter(bot__project_id=project_id, bot__admin=user_id, is_active=True).values('bot__name', 'bot__date_update', 'bot__id') \
+        try:
+            queryset = Scenario.objects.filter(bot__admin=user_id, is_active=True).values('bot__name', 'bot__date_update', 'bot__id') \
                 .annotate(name_list=ArrayAgg('name'))
         except Scenario.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)      
-        
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -89,11 +70,10 @@ class ScenarioViewSet(viewsets.ModelViewSet):
     def get_by_id(self, request, *args, **kwargs):
         user_id = User.objects.get(email=request.user).id
 
-
-        try: 
+        try:
             bot_id = request.query_params.get('bot_id', None)
             bot = Bot.objects.get(id=bot_id, admin=user_id)
-        except: 
+        except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -102,27 +82,28 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = ScenarioSerializer(scenario, many=True)
-        
-        return Response(data=serializer.data,status=status.HTTP_200_OK)
 
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         user_id = User.objects.get(email=request.user).id
         id = request.data.get('scenario_id', None)
 
         try:
-            instance = Scenario.objects.filter(bot__admin=user_id, pk=id).first()
+            instance = Scenario.objects.filter(
+                bot__admin=user_id, pk=id).first()
         except Scenario.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = ScenarioSerializer(instance, data=request.data, partial=True)
+
+        serializer = ScenarioSerializer(
+            instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_202_ACCEPTED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    
+
 class ConsultationViewSet(generics.CreateAPIView):
     queryset = Consultation.objects.all()
     permission_classes = [AllowAny]
@@ -140,7 +121,8 @@ class ConsultationViewSet(generics.CreateAPIView):
         username = request.data.get('username', None)
 
         try:
-            user_id = BotUsers.objects.filter(username=username, bot_id=bot.id).first().id
+            user_id = BotUsers.objects.filter(
+                username=username, bot_id=bot.id).first().id
         except BotUsers.DoesNotExist:
             text = "user does not exist"
             return Response(data=text, status=status.HTTP_404_NOT_FOUND)
@@ -154,7 +136,7 @@ class ConsultationViewSet(generics.CreateAPIView):
         data = request.data.copy()
         data.update({"user": user_id})
         data.update({"expert": expert_id})
-
+        # data.update({"end_time": })
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

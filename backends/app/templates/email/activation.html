@@ -1,0 +1,18 @@
+{% load i18n %}
+
+{% block subject %}
+{% blocktrans %}{{ site_name }} - Спасибо за использование нашего продукта!{% endblocktrans %}
+{% endblock %}
+
+{% block html_body %}
+<p>{% trans "Вы получаете это письмо, так как вам необходимо завершить процесс активации на сайте "  %}{{ site_name }}</p>
+
+<p>{% trans "Пожалуйста, перейдите на следующую страницу, чтобы активировать свою учетную запись:" %}</p>
+
+<p><a href="{{ protocol }}://{{ domain }}/{{ url|safe }}">{{ protocol }}://{{ domain }}/{{ url|safe }}</a></p>
+
+<p>{% trans "Спасибо за использование нашего сайта!" %}</p>
+
+<p>Команда botpilot.ru</p>
+
+{% endblock html_body %}

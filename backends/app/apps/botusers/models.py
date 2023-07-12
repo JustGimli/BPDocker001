@@ -1,6 +1,7 @@
 from django.db import models
 from apps.bots.models import Bot
 
+
 class BotUsers(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=64, null=True)
@@ -10,6 +11,7 @@ class BotUsers(models.Model):
     is_have_consultation = models.BooleanField(default=False)
     phone = models.CharField(max_length=15, null=True)
     params = models.JSONField(null=True)
+
     class Meta:
         unique_together = ('bot', 'username')
 
