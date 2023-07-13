@@ -10,7 +10,16 @@ from apps.users.models import User
 from apps.payment.models import Account, Transaction
 from apps.bots.models import Bot
 from apps.chats.tasks import send_message
+from apps.consultations.models import Scenario
 from services.robokassa import generate_payment_link, result_payment, check_success_payment
+
+
+def get_text(scenario_id):
+    try:
+        sc = Scenario.objects.get(id=scenario_id).values('duration', 'name')
+    except Scenario.DoesNotExist:
+        return "Доступ к консультации оплачен. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
+    return f"Доступ к '{sc.name}' оплачен на {sc.duration.days} дней. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
 
 
 @api_view(['POST'])
@@ -31,12 +40,13 @@ def resultPayments(request, *args, **kwargs):
             account.save()
         token = Bot.objects.get(id=request.data.get('shp_id')).token
 
-        send_message.delay(user_id=request.data.get('shp_userId'), message="Доступ успешно открыт!!!",
+        text = get_text(request.data.get('shp_consultation'))
+
+        send_message.delay(user_id=request.data.get('shp_userId'), message=text,
                            token=token, name=request.data.get('shp_username'), cons=True, username=request.data.get('shp_username'),
                            scenario_id=request.data.get('shp_consultation'))
         return Response(data=data, status=status.HTTP_200_OK)
     return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['POST'])
 def getPaymentsLink(request, *args, **kwargs):
