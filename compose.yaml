@@ -43,7 +43,9 @@ services:
       volumes:
           - django:/home/app/media 
           - /var/run/docker.sock:/var/run/docker.sock
-          
+      
+      ports:
+        - 8001:8001
       depends_on:
           - server
           - redis

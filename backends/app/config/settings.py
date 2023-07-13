@@ -33,9 +33,9 @@ CORS_ALLOW_CREDENTIALS = True
 if DEBUG:
     INTERNAL_IPS = ["127.0.0.1",]  # debug_toolbar
 
-# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST', '127.0.0.1').split(' ')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST', '127.0.0.1').split(' ')
 # 185.59.216.0/24 (185.59.216.1 - 185.59.216.254)
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
