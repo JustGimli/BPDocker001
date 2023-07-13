@@ -30,6 +30,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', default=False)
 if DEBUG:
     INTERNAL_IPS = ["127.0.0.1",]  # debug_toolbar
 
