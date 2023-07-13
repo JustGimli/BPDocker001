@@ -19,7 +19,7 @@ def get_text(scenario_id):
         sc = Scenario.objects.values('duration', 'name').get(id=scenario_id)
     except Scenario.DoesNotExist:
         return "Доступ к консультации оплачен. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
-    return f"Доступ к '{sc.name}' оплачен на {sc.duration.days} дней. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
+     return f"Доступ к '{sc.get('name')}' оплачен на {sc.get('duration').days} дней. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
 
 
 @api_view(['POST'])
