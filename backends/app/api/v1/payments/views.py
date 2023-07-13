@@ -1,4 +1,5 @@
 import os
+import decimal
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -26,7 +27,7 @@ def resultPayments(request, *args, **kwargs):
             account = Account.objects.get(user=admin_id)
             Transaction.objects.create(
                 account=account, amount=request.data.get('OutSum'), consultation_id=request.data.get('shp_consultation'))
-            account.balance += int(request.data.get('OutSum'))
+            account.balance += decimal.Decimal(request.data.get('OutSum'))
             account.save()
         token = Bot.objects.get(id=request.data.get('shp_id')).token
 
