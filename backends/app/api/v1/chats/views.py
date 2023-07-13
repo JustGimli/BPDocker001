@@ -118,9 +118,9 @@ class BotInfoHandler(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class   ChatsViewSet(viewsets.ModelViewSet):
+class ChatsViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.select_related(
-        'user__first_name', 'user__last_name')
+        'user__first_name', 'user__last_name', 'user__phone', 'user__username')
     permission_classes = [AllowAny]
     serializer_class = ChatSerializer
 
