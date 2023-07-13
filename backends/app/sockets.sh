@@ -20,5 +20,5 @@ do
 done
 
 
-daphne -b 0.0.0.0 -p 8001  config.asgi:application 
+daphne -b 0.0.0.0 -p 8001 --proxy-headers  config.asgi:application 
 
