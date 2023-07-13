@@ -9,7 +9,7 @@ from  api.v1.chats.sockets import websocket_urlpatterns
 
 application = ProtocolTypeRouter(
     {
-        "http": django_asgi_app,
+        "https": django_asgi_app,
         "websocket": URLRouter(websocket_urlpatterns)
     }
 )
