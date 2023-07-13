@@ -31,10 +31,10 @@ class BotUsersViewSet(generics.CreateAPIView):
 @api_view(['POST'])
 def is_exists(request, *args, **kwargs):
     username = request.data.get('username')
-
+    token = request.data.get('token')
     if username is not None:
         try:
-            BotUsers.objects.get(username=username)
+            BotUsers.objects.get(username=username, bot__token=token)
             return Response(status=status.HTTP_200_OK)
         except BotUsers.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
