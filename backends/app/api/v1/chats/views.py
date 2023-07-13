@@ -199,11 +199,15 @@ class MessageListAPI(generics.ListAPIView):
         queryset = self.filter_queryset(data.messages.all())
 
         page = self.paginate_queryset(queryset)
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            paginated_response = self.get_paginated_response(serializer.data)
+            paginated_response['next'] = self.request.build_absolute_uri(
+                paginated_response['next']).replace('http://', 'https://')
+            paginated_response['previous'] = self.request.build_absolute_uri(
+                paginated_response['previous']).replace('http://', 'https://')
+            return paginated_response
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-

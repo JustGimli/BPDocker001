@@ -29,7 +29,7 @@ DEBUG = os.environ.get('DEBUG', default=True)
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', default=False)
 if DEBUG:
     INTERNAL_IPS = ["127.0.0.1",]  # debug_toolbar
