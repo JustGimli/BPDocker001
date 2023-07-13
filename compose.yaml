@@ -57,11 +57,6 @@ services:
       dockerfile: Dockerfile
     
     entrypoint: ./sockets.sh
-    # volumes:
-    #   - django:/home/app/static
-    #   - media:/home/app/media
-    ports:
-     - 8001:8001
     depends_on:
       - redis
 
