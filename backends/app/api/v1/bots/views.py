@@ -1,3 +1,4 @@
+import os
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -153,8 +154,12 @@ class BotSettingsApi(APIView):
             return Response(data={"error": "need a valid bot token"}, status=status.HTTP_404_NOT_FOUND)
 
         if data['bot__img']:
-            img_url = request.scheme + "://" + request.get_host() + '/media/' + \
-                data['bot__img']
+            if os.environ.get('PROD') is not None:
+                img_url = request.scheme + "://" + request.get_host() + '/api/media/' + \
+                    data['bot__img']
+            else:
+                img_url = request.scheme + "://" + request.get_host() + '/media/' + \
+                    data['bot__img']
         else:
             img_url = ''
 
