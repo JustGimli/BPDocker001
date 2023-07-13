@@ -17,9 +17,10 @@ from services.robokassa import generate_payment_link, result_payment, check_succ
 def get_text(scenario_id):
     try:
         sc = Scenario.objects.values('duration', 'name').get(id=scenario_id)
+        duration = sc.get('duration')
     except Scenario.DoesNotExist:
         return "Доступ к консультации оплачен. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
-     return f"Доступ к '{sc.get('name')}' оплачен на {sc.get('duration').days} дней. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
+    return f"Доступ к {sc.get('name')} оплачен на {duration.days} дней. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
 
 
 @api_view(['POST'])
