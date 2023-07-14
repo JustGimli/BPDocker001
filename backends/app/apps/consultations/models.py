@@ -21,6 +21,12 @@ class Scenario(models.Model):
     files = models.ManyToManyField(
         File, related_name="scenariosFiles", blank=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['id']),
+            models.Index(fields=['bot'])
+        ]
+
 
 class Consultation(models.Model):
     user = models.ForeignKey(BotUsers, on_delete=models.CASCADE)
@@ -28,4 +34,10 @@ class Consultation(models.Model):
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(auto_now=True)
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['start_time', 'expert']),
+            models.Index(fields=['expert'])
+        ]
     # message_count = models.PositiveIntegerField(default=0)  # primary = models.BooleanField(default=True)

@@ -6,6 +6,7 @@ from apps.botusers.models import BotUsers
 from apps.bots.models import Bot
 from .serializers import BotUsersSerializer
 
+
 class BotUsersViewSet(generics.CreateAPIView):
     queryset = BotUsers.objects.all()
     permission_classes = [AllowAny]
@@ -25,7 +26,7 @@ class BotUsersViewSet(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response( status=status.HTTP_201_CREATED, headers=headers)
+        return Response(status=status.HTTP_201_CREATED, headers=headers)
 
 
 @api_view(['POST'])

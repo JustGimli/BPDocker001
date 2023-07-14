@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from apps.users.models import User
 from apps.chats.models import BotUsers
-from apps.payment.models import Transaction
+from apps.payments.models import Transaction
 from apps.consultations.models import Consultation
 
 from django.utils import timezone
@@ -101,7 +101,7 @@ class ConsultationView(APIView):
             end_date = timezone.now()
             start_date = end_date - timedelta(days=30)
 
-            return self.get_day(start_date=start_date, end_date=end_date, expert_id=user_id, type='mount')
+            return self.get_day(start_date=start_date, end_date=end_date, expert_id=user_id, type='month')
         elif period == "all time":
             return self.get_day(expert_id=user_id)
 
@@ -113,7 +113,7 @@ class ConsultationView(APIView):
             consultations = Consultation.objects.filter(
                 start_time__range=(start_date, end_date), expert_id=expert_id).annotate(name=F('scenario__name'))\
                 .values('name').annotate(value=Count('name'))
-            if type == "month" or type is None:
+            if type == "month":
                 try:
                     line = Consultation.objects.filter(start_time__range=(start_date, end_date), expert_id=expert_id)\
                         .annotate(month=ExtractMonth('start_time')).values(x=F('month')).annotate(y=Count('id'))
@@ -121,13 +121,13 @@ class ConsultationView(APIView):
                     return Response(status=status.HTTP_404_NOT_FOUND)
             else:
                 line = Consultation.objects.filter(start_time__range=(start_date, end_date), expert_id=expert_id)\
-                    .annotate(day=ExtractMonth('start_time')).values(x=F('day')).annotate(y=Count('id'))
+                    .annotate(day=ExtractDay('start_time')).values(x=F('day')).annotate(y=Count('id'))
         else:
             try:
                 consultations = Consultation.objects.filter(
                     expert_id=expert_id).annotate(name=F('scenario__name'))\
                     .values('name').annotate(value=Count('name'))
-                line = Consultation.objects.filter(start_time__range=(start_date, end_date), expert_id=expert_id)\
+                line = Consultation.objects.filter(expert_id=expert_id)\
                     .annotate(month=ExtractMonth('start_time')).values(x=F('month')).annotate(y=Count('id'))
             except Consultation.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
@@ -179,7 +179,7 @@ class PaymentsView(APIView):
 
         if start_date and end_date:
             try:
-                if type == "month" or type is None:
+                if type == "month":
                     transactions = Transaction.objects.filter(
                         date__range=(start_date, end_date), account__user_id=expert_id)\
                         .annotate(month=ExtractMonth('date')).values(x=F('month')).annotate(y=Sum('amount'))
@@ -256,7 +256,7 @@ class UserView(APIView):
             try:
                 users = BotUsers.objects.filter(
                     registration_date__range=(start_date, end_date), bot_id__admin_id=expert_id)
-                if type == "month" or type is None:
+                if type == "month":
                     consultations = Consultation.objects.filter(start_time__range=(start_date, end_date), expert_id=expert_id)\
                         .annotate(month=ExtractMonth('start_time')).values(x=F('month'))\
                         .annotate(y=Count('id'))

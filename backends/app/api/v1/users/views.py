@@ -5,7 +5,7 @@ from .serializers import UserSerializer
 from django.db.models import F
 
 from apps.users.models import User
-from apps.payment.models import Account
+from apps.payments.models import Account
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -18,7 +18,7 @@ class UserViewSet(viewsets.ModelViewSet):
             queryset = Account.objects.values('balance', 'user__id',
                                               email=F('user__email'), first_name=F('user__first_name'), last_name=F('user__last_name')).get(user=request.user)
         except Account.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serialiser = self.get_serializer(queryset)
         return Response(data=serialiser.data, status=status.HTTP_200_OK)
 

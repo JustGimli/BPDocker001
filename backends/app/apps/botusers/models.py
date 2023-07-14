@@ -14,9 +14,12 @@ class BotUsers(models.Model):
 
     class Meta:
         unique_together = ('bot', 'username')
+        indexes = [
+            models.Index(fields=['bot', 'username']),
+        ]
 
 
-class BotUsersStat(models.Model):
-    total_messages_recieved = models.PositiveIntegerField(default=0)
-    total_messages_sent = models.PositiveIntegerField(default=0)
-    last_interation_date = models.DateTimeField(null=True, auto_now=True)
+# class BotUsersStat(models.Model):
+#     total_messages_recieved = models.PositiveIntegerField(default=0)
+#     total_messages_sent = models.PositiveIntegerField(default=0)
+#     last_interation_date = models.DateTimeField(null=True, auto_now=True)

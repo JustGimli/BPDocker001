@@ -35,7 +35,7 @@ if DEBUG:
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST', '127.0.0.1').split(' ')
 # 185.59.216.0/24 (185.59.216.1 - 185.59.216.254)
-ALLOWED_HOSTS = ['botpilot.ru']
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -55,11 +55,10 @@ INSTALLED_APPS = [
     'djoser',
     'django_celery_results',
     'apps.users.apps.UsersConfig',
-    'apps.rating.apps.RatingConfig',
     'apps.bots.apps.BotsConfig',
     'apps.chats.apps.ChatsConfig',
     'apps.projects.apps.ProjectsConfig',
-    'apps.payment.apps.PaymentConfig',
+    'apps.payments.apps.PaymentConfig',
     'apps.consultations.apps.ConsultationConfig',
     'apps.botusers.apps.BotusersConfig'
 ]

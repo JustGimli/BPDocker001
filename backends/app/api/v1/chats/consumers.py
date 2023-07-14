@@ -50,9 +50,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if message:
 
                 message_data = {
-                    "message": { 
+                    "message": {
                         "id": message.id,
-                        
+
                         "is_read": message.is_read,
                         "time": str(message.time),
                         "is_author": message.is_author
@@ -82,11 +82,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "data": data.get('data'),
             "type": data.get('message_type'),
             "chat": data.get('chat_id')
-            
-        }
-        
-        await self.send(text_data=json.dumps(message_data))    
 
+        }
+
+        await self.send(text_data=json.dumps(message_data))
 
     @database_sync_to_async
     def get_user(self, access_token):
@@ -121,6 +120,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     def get_expert_id(self):
         return self.scope['query_string'].decode().split('&')[1].split('=')[1]
-    
+
     def assess_token(self):
         return self.scope['query_string'].decode().split('&')[0].split('=')[1]

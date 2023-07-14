@@ -24,6 +24,11 @@ class Bot(models.Model):
         verbose_name = 'bot'
         verbose_name_plural = 'bots'
 
+        indexes = [
+            models.Index(fields=['id']),
+            models.Index(fields=['admin'])
+        ]
+
 
 class BotSettings(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
@@ -35,3 +40,9 @@ class BotSettings(models.Model):
     params = models.JSONField(_("params"), null=True)
     is_fio = models.BooleanField(_("is_fio"), default=True)
     is_phone = models.BooleanField(_("is_phone"), default=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['id']),
+            models.Index(fields=['bot']),
+        ]

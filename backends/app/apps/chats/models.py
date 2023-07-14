@@ -1,6 +1,6 @@
 from django.db import models
 from apps.users.models import User
-from apps.botusers.models import  BotUsers
+from apps.botusers.models import BotUsers
 
 
 class Message(models.Model):
@@ -11,6 +11,10 @@ class Message(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     is_author = models.BooleanField(default=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['id'])
+        ]
 
 
 class Chat(models.Model):
@@ -22,9 +26,10 @@ class Chat(models.Model):
     messages = models.ManyToManyField(Message, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
 
     class Meta:
         unique_together = ('chat_id', 'user')
 
-
+        indexes = [
+            models.Index(fields=['id'])
+        ]

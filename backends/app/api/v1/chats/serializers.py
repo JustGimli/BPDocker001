@@ -9,7 +9,7 @@ class ChatSerializer(serializers.ModelSerializer):
         source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
     phone = serializers.CharField(source='user.phone', required=False)
-    params = serializers.JSONField(source='user.params' ,required=False)
+    params = serializers.JSONField(source='user.params', required=False)
     username = serializers.CharField(source='user.username', required=False)
 
     class Meta:
@@ -21,4 +21,3 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = '__all__'
-

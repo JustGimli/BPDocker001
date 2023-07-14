@@ -1,6 +1,6 @@
 import os
 from rest_framework import status, viewsets, generics
-from rest_framework.permissions import  AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import CursorPagination
@@ -12,6 +12,7 @@ from apps.chats.models import BotUsers
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+
 
 class WebHooks(APIView):
     def post(self, request, format=None):
@@ -31,7 +32,6 @@ class WebHooks(APIView):
             data = message.text
 
         elif type == 'photo':
-            
 
             message = Message.objects.create(
                 photo=request.FILES.get('photo'),
@@ -40,9 +40,9 @@ class WebHooks(APIView):
 
             message.save()
 
-            data = os.environ.get('URL', "https://botpilot.ru/api") + message.photo.url
+            data = os.environ.get(
+                'URL', "https://botpilot.ru/api") + message.photo.url
         elif type == 'document':
-            
 
             message = Message.objects.create(
                 document=request.FILES.get('document'),
@@ -50,8 +50,9 @@ class WebHooks(APIView):
             )
 
             message.save()
-   
-            data = os.environ.get('URL', "https://botpilot.ru/api") + message.document.url
+
+            data = os.environ.get(
+                'URL', "https://botpilot.ru/api") + message.document.url
 
         try:
             chat = Chat.objects.get(chat_id=chat_obj)
@@ -62,9 +63,6 @@ class WebHooks(APIView):
 
         chat.messages.add(message)
         chat.save()
-
-        
-
 
         channel_layer = get_channel_layer()
         try:
@@ -142,16 +140,13 @@ class ChatsViewSet(viewsets.ModelViewSet):
         except BotUsers.DoesNotExist or Bot.DoesNotExist as e:
             print(e)
 
-        
         data = request.data.copy()
         data.update({'user': user.id})
-
-        
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        
+
         try:
             chat = Chat.objects.get(chat_id=data.get('chat_id', None))
         except Chat.DoesNotExist:
@@ -159,9 +154,8 @@ class ChatsViewSet(viewsets.ModelViewSet):
             return Response(status=404)
 
         chat.expert = bot.admin
+        chat.is_active = True
         chat.save()
-
-
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -203,10 +197,11 @@ class MessageListAPI(generics.ListAPIView):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             paginated_response = self.get_paginated_response(serializer.data)
-            paginated_response['next'] = self.request.build_absolute_uri(
-                paginated_response['next']).replace('http://', 'https://')
-            paginated_response['previous'] = self.request.build_absolute_uri(
-                paginated_response['previous']).replace('http://', 'https://')
+
+            # paginated_response['next'] = self.request.build_absolute_uri(
+            #     paginated_response['next']).replace('http://', 'https://')
+            # paginated_response['previous'] = self.request.build_absolute_uri(
+            #     paginated_response['previous']).replace('http://', 'https://')
             return paginated_response
 
         serializer = self.get_serializer(queryset, many=True)

@@ -5,22 +5,21 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from django.db import transaction
+from apps.consultations.models import Scenario
 from apps.botusers.models import BotUsers
 from apps.users.models import User
-from apps.payment.models import Account, Transaction
+from apps.payments.models import Account, Transaction
 from apps.bots.models import Bot
 from apps.chats.tasks import send_message
-from apps.consultations.models import Scenario
 from services.robokassa import generate_payment_link, result_payment, check_success_payment
 
 
 def get_text(scenario_id):
     try:
         sc = Scenario.objects.values('duration', 'name').get(id=scenario_id)
-        duration = sc.get('duration')
     except Scenario.DoesNotExist:
         return "Доступ к консультации оплачен. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
-    return f"Доступ к {sc.get('name')} оплачен на {duration.days} дней. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
+    return f"Доступ к '{sc.get('name')}' оплачен на {sc.get('duration').days} дней. Пожалуйста, напишите ваш вопрос и эксперт на него ответит!"
 
 
 @api_view(['POST'])
@@ -29,8 +28,8 @@ def resultPayments(request, *args, **kwargs):
 
     if data != 'bad sign':
         with transaction.atomic():
-            user = BotUsers.objects.get(username=request.data.get(
-                'shp_username'), bot=request.data.get('shp_id'))
+            user = BotUsers.objects.filter(username=request.data.get(
+                'shp_username'), bot=request.data.get('shp_id')).first()
             user.is_have_consultation = True
             user.save()
             admin_id = Bot.objects.get(id=request.data.get('shp_id')).admin.id
@@ -48,6 +47,7 @@ def resultPayments(request, *args, **kwargs):
                            scenario_id=request.data.get('shp_consultation'))
         return Response(data=data, status=status.HTTP_200_OK)
     return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def getPaymentsLink(request, *args, **kwargs):
