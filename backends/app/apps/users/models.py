@@ -9,6 +9,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         _('email'), max_length=255, blank=False, unique=True)
     first_name = models.CharField(_('first name'), max_length=56, blank=True)
     last_name = models.CharField(_('last name'), max_length=56, blank=True)
+    surname = models.CharField(_('surname'), max_length=56, blank=True)
     password = models.CharField(_('password'), max_length=512)
     date_joined = models.DateField(_('date joined'), auto_now_add=True)
     is_staff = models.BooleanField(_('is staff'), default=False)
