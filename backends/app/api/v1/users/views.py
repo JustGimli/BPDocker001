@@ -15,9 +15,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
-            queryset = Account.objects.values('balance', 'user__id',
-                                              email=F('user__email'), first_name=F('user__first_name'), last_name=F('user__last_name')).get(user=request.user)
-        except Account.DoesNotExist:
+            queryset = User.objects.select_related('account__balance')\
+                .values('first_name', 'last_name', 'surname', 'id', 'email', balance=F('account__balance'))\
+                .get(email=request.user)
+        except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serialiser = self.get_serializer(queryset)
         return Response(data=serialiser.data, status=status.HTTP_200_OK)

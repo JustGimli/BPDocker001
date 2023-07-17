@@ -17,7 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     oferta = models.BooleanField(_('accepted'), default=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["first_name", "last_name", "surname"]
 
     objects = UserManger()
 
