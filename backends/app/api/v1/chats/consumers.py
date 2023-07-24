@@ -31,6 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         data = json.loads(text_data)
         chat_id = data.get('chat', None)
+        type = data.get('type', "text")
 
         if chat_id is None:
             await self.close()
@@ -44,30 +45,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Reject the connection if the token is invalid or the user doesn't exist
             await self.close()
         else:
+            if (type == "text"):
+                message, token = await self.get_chat(chat_id=chat_id, user=user, data=data.get('message', None))
 
-            message, token = await self.get_chat(chat_id=chat_id, user=user, data=data.get('message', None))
+                if message:
+                    message_data = {
+                        "message": {
+                            "id": message.id,
+                            "is_read": message.is_read,
+                            "time": str(message.time),
+                            "is_author": message.is_author
+                        },
+                        "data": message.text,
+                        "type": message.type,
+                        "chat": chat_id
+                    }
 
-            if message:
+                    send_message.delay(
+                        user_id=chat_id, message=message.text, token=token)
 
-                message_data = {
-                    "message": {
-                        "id": message.id,
-
-                        "is_read": message.is_read,
-                        "time": str(message.time),
-                        "is_author": message.is_author
-                    },
-                    "data": message.text,
-                    "type": 'text',
-                    "chat": chat_id
-                }
-
-                send_message.delay(
-                    user_id=chat_id, message=message.text, token=token)
-
-                await self.send(text_data=json.dumps(message_data))
+                else:
+                    await self.close()
             else:
-                await self.close()
+                message_data = data
+
+            await self.send(text_data=json.dumps(message_data))
 
     async def send_data_to_client(self, event):
         data = event['data']
@@ -78,6 +80,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "is_read": False,
                 "time": data.get('message_time'),
                 "is_author": False,
+                'is_bot': data.get('is_bot'),
             },
             "data": data.get('data'),
             "type": data.get('message_type'),

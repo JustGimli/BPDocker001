@@ -215,6 +215,7 @@ DJOSER = {
         'password_reset': 'apps.users.email.PasswordResetEmail',
     },
     "PASSWORD_RESET_CONFIRM_URL": "password-reset/{uid}/{token}",
+    'HIDE_USERS': True,
 
 }
 

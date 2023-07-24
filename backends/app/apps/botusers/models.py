@@ -6,11 +6,14 @@ class BotUsers(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=64, null=True)
     last_name = models.CharField(max_length=64, null=True)
+    surname = models.CharField(max_length=64, null=True, blank=True)
     username = models.CharField(max_length=64)
     registration_date = models.DateTimeField(auto_now_add=True)
     is_have_consultation = models.BooleanField(default=False)
     phone = models.CharField(max_length=15, null=True)
     params = models.JSONField(null=True)
+    photo = models.FileField(
+        upload_to='botusers/avatars/%Y/', blank=True, null=True)
 
     class Meta:
         unique_together = ('bot', 'username')

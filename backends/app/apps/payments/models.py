@@ -14,12 +14,12 @@ class Account(models.Model):
 
 
 class Transaction(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.PROTECT)
     status = models.CharField(max_length=64, default="in progress")
     date = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(max_digits=10, decimal_places=0)
     consultation = models.ForeignKey(
-        Scenario, on_delete=models.CASCADE, null=True)
+        Scenario, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         indexes = [

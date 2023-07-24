@@ -11,7 +11,7 @@ import os
 def get_consultations(token: str) -> dict:
     try:
         scenarios = Scenario.objects.filter(
-            bot__token=token, is_active=True).values('name', 'price', 'duration', 'id')
+            bot__token=token, is_active=True).values('name', 'price', 'duration', 'id', 'description')
     except Scenario.DoesNotExist:
         return {}
 
@@ -19,7 +19,8 @@ def get_consultations(token: str) -> dict:
 
     for scenario in scenarios:
         res[scenario['name']] = {
-            'cost': scenario['price'], 'days': scenario['duration'].days, "id": scenario['id']}
+            'cost': scenario['price'], 'days': scenario['duration'].days,
+            "id": scenario['id'], 'description': scenario['description']}
 
     converted_data = {
         key: {
@@ -42,11 +43,11 @@ def check_container_exists(client, container_id=None):
         return None
 
 
-def get_fio_id(token: str) -> str:
+def get_fio_id_admin(token: str) -> str:
     try:
         bot = Bot.objects.get(token=token)
         fio = ' '.join([bot.admin.first_name, bot.admin.last_name])
-        return fio, bot.id
+        return fio, bot.id, bot.admin.id
 
     except (User.DoesNotExist):
         return "", bot.id
@@ -71,7 +72,7 @@ def run_bot_container(token):
     data = {}
 
     cons = get_consultations(token)
-    fio, bot_id = get_fio_id(token)
+    fio, bot_id, admin_id = get_fio_id_admin(token)
     params, container_id, is_fio, is_phone = get_bot_settings(token, data)
 
     if params is None:
@@ -83,9 +84,10 @@ def run_bot_container(token):
         "IS_PHONE": int(is_phone),
         "CONSULTATIONS":  json.dumps(cons),
         "FIO": fio,
-        "ID": bot_id,
+        "BOT_ID": bot_id,
         "PARAMS": json.dumps(params),
-        "URL_PATH": os.environ.get('URL_PATH', 'https://botpilot.ru/api/')
+        "URL_PATH": os.environ.get('URL_PATH', 'https://botpilot.ru/api/'),
+        "ADMIN_ID": admin_id
     }
 
     client = docker.from_env()

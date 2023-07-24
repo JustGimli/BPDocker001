@@ -4,9 +4,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import CursorPagination
+from django.db import transaction
 from apps.chats.models import Message, Chat
 from apps.bots.models import Bot
-from apps.users.models import User
 from .serializers import ChatSerializer, MessageSerializer
 from apps.chats.models import BotUsers
 
@@ -15,51 +15,60 @@ from asgiref.sync import async_to_sync
 
 
 class WebHooks(APIView):
+    @transaction.atomic
     def post(self, request, format=None):
         chat_obj = request.data.get('id')
 
         type = request.data.get('type', None)
+        is_bot = request.data.get('is_bot', False)
+
         if type == 'text':
             text = request.data.get('text')
 
             message = Message.objects.create(
                 text=text,
-                is_author=False
+                is_author=False,
+                is_bot=is_bot
             )
 
             message.save()
 
             data = message.text
 
+            text = f"Вам новое текстовое сообщение на платформе botpilot.ru : {data}"
         elif type == 'photo':
 
             message = Message.objects.create(
                 photo=request.FILES.get('photo'),
-                is_author=False
+                is_author=False,
+                is_bot=is_bot
             )
 
             message.save()
 
             data = os.environ.get(
-                'URL', "https://botpilot.ru/api") + message.photo.url
+                'URL_PATH', "https://botpilot.ru/api") + message.photo.url
+
+            text = f"Вам новое фото на платформе botpilot.ru : {data}"
         elif type == 'document':
 
             message = Message.objects.create(
                 document=request.FILES.get('document'),
-                is_author=False
+                is_author=False,
+                is_bot=is_bot
             )
 
             message.save()
 
             data = os.environ.get(
-                'URL', "https://botpilot.ru/api") + message.document.url
+                'URL_PATH', "https://botpilot.ru/api") + message.document.url
+
+            text = f"Вам новый файл на платформе botpilot.ru : {data}"
 
         try:
             chat = Chat.objects.get(chat_id=chat_obj)
         except Chat.DoesNotExist:
-            chat = Chat.objects.create(
-                chat_id=chat_obj,
-            )
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         chat.messages.add(message)
         chat.save()
@@ -80,9 +89,16 @@ class WebHooks(APIView):
                     'data': data,
                     'message_time': str(message.time),
                     'chat_id': chat_obj,
+                    'is_bot': is_bot
                 }
             }
         )
+
+        # try:
+        #     send_message.delay(
+        #         user_id=chat.expert.telegram_id, message=text, token=os.environ.get('NOTIFICATION_TOKEN'))
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_200_OK)
 
@@ -118,9 +134,24 @@ class BotInfoHandler(APIView):
 
 class ChatsViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.select_related(
-        'user__first_name', 'user__last_name', 'user__phone', 'user__username')
+        'user__first_name', 'user__last_name', 'user__phone', 'user__username', 'user__photo')
     permission_classes = [AllowAny]
     serializer_class = ChatSerializer
+
+    def update(self, request, *args, **kwargs):
+        try:
+            chat = Chat.objects.get(id=request.data.get(
+                'chat_id'), expert=request.user)
+        except Chat.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ChatSerializer(chat, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         username = request.data.get('username')
@@ -175,7 +206,7 @@ class SetCursorPaginations(CursorPagination):
     ordering = '-time'
 
 
-class MessageListAPI(generics.ListAPIView):
+class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     pagination_class = SetCursorPaginations
@@ -206,3 +237,26 @@ class MessageListAPI(generics.ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        chat_id = request.data.get("chat_id")
+
+        with transaction.atomic():
+            serializer = MessageSerializer(data=request.data)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+
+            try:
+                chat = Chat.objects.get(
+                    chat_id=chat_id)
+            except Chat.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+            chat.messages.add(serializer.data.get('id'))
+            chat.save()
+
+            data = {"message_id": serializer.data.get('id'), "name": serializer.data.get(
+                'video') or serializer.data.get('photo')}
+
+            return Response(data, status=status.HTTP_200_OK)

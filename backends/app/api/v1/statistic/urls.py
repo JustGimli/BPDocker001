@@ -1,9 +1,9 @@
 from rest_framework.urls import path
-from .views import GeneralView, ConsultationView, PaymentsView, UserView
+from .views import GeneralView,  StatView
 
 urlpatterns = [
     path('general/', GeneralView.as_view()),
-    path('consultation/', ConsultationView.as_view()),
-    path('payments/', PaymentsView.as_view()),
-    path('users/', UserView.as_view()),
+    path('consultation/', StatView.as_view({"get": "get"})),
+    path('payments/', StatView.as_view({"get": "get_payments_stat"})),
+    path('users/', StatView.as_view({"get": "get_user_stat"})),
 ]

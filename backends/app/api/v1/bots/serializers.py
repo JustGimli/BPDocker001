@@ -36,7 +36,7 @@ class BotSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = BotSettings
         fields = ['name',
-                  'date_update', 'id', 'status']
+                  'date_update', 'id', 'status', 'params', 'is_fio', 'is_phone', 'start_message']
 
     def create(self, validated_data):
         validated_data.update({"admin": self.context['request'].user})

@@ -20,6 +20,7 @@ class Scenario(models.Model):
     is_active = models.BooleanField(_("active"), default=True)
     files = models.ManyToManyField(
         File, related_name="scenariosFiles", blank=True)
+    description = models.CharField(max_length=512, null=True, blank=True)
 
     class Meta:
         indexes = [

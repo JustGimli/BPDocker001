@@ -51,7 +51,7 @@ def resultPayments(request, *args, **kwargs):
 
 @api_view(['POST'])
 def getPaymentsLink(request, *args, **kwargs):
-    bot_id = request.data.get('id')
+    bot = request.data.get('bot')
     username = request.data.get('username')
     cost = request.data.get('cost')
     description = request.data.get('description', " ")
@@ -59,13 +59,13 @@ def getPaymentsLink(request, *args, **kwargs):
     name = request.data.get('name')
     consultation_id = request.data.get('consultation_id')
 
-    if not (bot_id and username and cost and description and user_id and name):
+    if not (bot and username and cost and description and user_id and name):
         return Response(data={'error': 'request must contianer a bot token an username in body'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     link = generate_payment_link(merchant_login=os.environ.get('MERCHANT_LOGIN'),
                                  merchant_password_1=os.environ.get('MERCHANT_PASSWORD_1'), cost=cost, description=description,
-                                 number="", is_test=os.environ.get('ROBOKASSATEST'), shp_consultation=consultation_id, shp_id=bot_id,   shp_name=name,
+                                 number="", is_test=os.environ.get('ROBOKASSATEST'), shp_consultation=consultation_id, shp_id=bot,   shp_name=name,
                                  shp_userId=user_id, shp_username=username)
 
     return Response(data={'link': link}, status=status.HTTP_200_OK)

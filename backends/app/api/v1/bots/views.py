@@ -1,6 +1,8 @@
+import os
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.db import transaction
 
 from .serializers import BotSerializer, BotSettingsSerializer
 from rest_framework.response import Response
@@ -8,7 +10,6 @@ from apps.users.models import User
 from apps.bots.models import Bot, BotSettings
 from apps.consultations.models import Scenario
 from apps.bots.tasks import run_bot_container, remove_container, stop_container, reload_container
-from copy import deepcopy
 
 
 class BotView(viewsets.ModelViewSet):
@@ -19,15 +20,7 @@ class BotView(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwards):
 
-        user = User.objects.get(email=request.user)  # request.user
-
-        # try:
-        #     project = Project.objects.filter(
-        #         name=project_name, user=user.id).first().id
-        # except Project.DoesNotExist:
-        #     return Response(data="Must have a project id", status=status.HTTP_404_NOT_FOUND)
-
-        queryset = Bot.objects.filter(admin=user.id)
+        queryset = Bot.objects.filter(admin=request.user.id)
 
         if queryset.exists():
             serializer = self.get_serializer(queryset, many=True)
@@ -39,15 +32,16 @@ class BotView(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        self.perform_create(serializer)
+        with transaction.atomic():
+            self.perform_create(serializer)
 
-        primary = Scenario.objects.create(
-            name="Первичная консультация", bot=serializer.instance)
-        secondary = Scenario.objects.create(
-            name="Повторная консультация", bot=serializer.instance)
+            primary = Scenario.objects.create(
+                name="Первичная консультация", bot=serializer.instance, description="если вы впервые обращаетесь за консультацией")
+            secondary = Scenario.objects.create(
+                name="Повторная консультация", bot=serializer.instance, description="если ранее вы приходили на очный приём или получали онлайн-консультацию")
 
-        primary.save()
-        secondary.save()
+            primary.save()
+            secondary.save()
 
         run_bot_container.delay(token=serializer.data['token'])
         headers = self.get_success_headers(serializer.data)
@@ -57,10 +51,8 @@ class BotView(viewsets.ModelViewSet):
         if not id:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        user_id = User.objects.get(email=request.user).id
-
         try:
-            bot = Bot.objects.get(admin=user_id, pk=id)
+            bot = Bot.objects.get(admin=request.user.id, pk=id)
             container_id = BotSettings.objects.get(
                 bot__token=bot.token).container_id
         except Bot.DoesNotExist:
@@ -93,10 +85,8 @@ class BotSettingsView(viewsets.ModelViewSet):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     def disable(self, request, id,  *args, **kwargs):
-        user_id = User.objects.get(email=request.user).id
-
         try:
-            bot = Bot.objects.get(admin=user_id, pk=id)
+            bot = Bot.objects.get(admin=request.user.id, pk=id)
             settings = BotSettings.objects.get(bot__id=bot.id)
             settings.status = 'pending'
             settings.save()
@@ -108,10 +98,8 @@ class BotSettingsView(viewsets.ModelViewSet):
         return Response(status=status.HTTP_200_OK)
 
     def enable(self, request, id, *args, **kwargs):
-        user_id = User.objects.get(email=request.user).id
-
         try:
-            bot = Bot.objects.get(admin=user_id, pk=id)
+            bot = Bot.objects.get(admin=request.user.id, pk=id)
         except Bot.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -120,16 +108,17 @@ class BotSettingsView(viewsets.ModelViewSet):
         return Response(status=status.HTTP_200_OK)
 
     def reload(self, request, id, *args, **kwargs):
-        user_id = User.objects.get(email=request.user).id
-
         try:
-            bot = Bot.objects.get(admin=user_id, pk=id)
+            bot = Bot.objects.get(admin=request.user.id, pk=id)
         except Bot.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         reload_container.delay(token=bot.token)
 
         return Response(status=status.HTTP_200_OK)
+
+    def update(self, request, id, *args, **kwargs):
+        pass
 
 
 """

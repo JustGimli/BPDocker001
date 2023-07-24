@@ -15,7 +15,8 @@ class ActivationEmail(BaseEmailMessage):
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
         context["url"] = settings.ACTIVATION_URL.format(**context)
-        context["domain"] = "botpilot.ru"
+        context["domain"] = "botpilot.ru"  # Your site domain
+        # Your site protocol e.g. ("http", "https")
         context["protocol"] = "https"
         return context
 
@@ -31,6 +32,7 @@ class PasswordResetEmail(BaseEmailMessage):
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
         context["url"] = settings.PASSWORD_RESET_CONFIRM_URL.format(**context)
-        context["domain"] = "botpilot.ru" 
+        context["domain"] = "botpilot.ru"  # Your site domain
+        # Your site protocol e.g. ("http", "https")
         context["protocol"] = "https"
         return context

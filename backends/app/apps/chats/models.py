@@ -5,11 +5,14 @@ from apps.botusers.models import BotUsers
 
 class Message(models.Model):
     text = models.CharField(max_length=512, default="", blank=True)
-    document = models.FileField(upload_to='messages/', blank=True, null=True)
-    photo = models.ImageField(upload_to='messages/', blank=True, null=True)
+    document = models.FileField(
+        upload_to='messages/%Y/', blank=True, null=True)
+    photo = models.ImageField(upload_to='messages/%Y/', blank=True, null=True)
+    video = models.FileField(upload_to='messages/%Y/', blank=True, null=True)
     is_read = models.BooleanField(default=False)
     time = models.DateTimeField(auto_now_add=True)
-    is_author = models.BooleanField(default=True)
+    is_author = models.BooleanField(default=False)
+    is_bot = models.BooleanField(default=False)
 
     class Meta:
         indexes = [
@@ -26,6 +29,7 @@ class Chat(models.Model):
     messages = models.ManyToManyField(Message, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(null=True)
 
     class Meta:
         unique_together = ('chat_id', 'user')
