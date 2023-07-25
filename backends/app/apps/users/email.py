@@ -2,6 +2,7 @@ from templated_mail.mail import BaseEmailMessage
 from django.contrib.auth.tokens import default_token_generator
 from djoser import utils
 from djoser.conf import settings
+import os
 
 
 class ActivationEmail(BaseEmailMessage):
@@ -15,9 +16,9 @@ class ActivationEmail(BaseEmailMessage):
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
         context["url"] = settings.ACTIVATION_URL.format(**context)
-        context["domain"] = "localhost:3000"  # Your site domain
-        # Your site protocol e.g. ("http", "https")
-        context["protocol"] = "http"
+        context["domain"] = os.environ.get('SITE_DOMAIN', 'botpilot.ru')
+
+        context["protocol"] = os.environ.get('SITE_PROTOCOL', 'https')
         return context
 
 
@@ -32,7 +33,7 @@ class PasswordResetEmail(BaseEmailMessage):
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
         context["url"] = settings.PASSWORD_RESET_CONFIRM_URL.format(**context)
-        context["domain"] = 'botpilot.ru'
+        context["domain"] = os.environ.get('SITE_DOMAIN', 'botpilot.ru')
 
-        context["protocol"] = 'https'
+        context["protocol"] = os.environ.get('SITE_PROTOCOL', 'https')
         return context
