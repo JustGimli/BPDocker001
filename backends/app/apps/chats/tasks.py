@@ -11,13 +11,13 @@ def get_files(token: str, name: str):
         scenario = Scenario.objects.get(name=name, bot__token=token)
         files = scenario.files.all().first()
 
-        return os.environ.get('URL', "https://botpilot.ru/api") + files.file.url
+        return os.environ.get('URL_PATH', "https://botpilot.ru/api/")[:-1] + files.file.url
     except Scenario.DoesNotExist:
         return ""
 
 
 @shared_task()
-def send_message(user_id, message, token, name=None, cons=False, username=None, scenario_id=None):
+def send_message(user_id, message, token, name=None, cons=False, username=None, scenario_id=None, file=None):
     client = docker.from_env()
 
     container = check_container_exists(client, 'send_message')
@@ -26,6 +26,8 @@ def send_message(user_id, message, token, name=None, cons=False, username=None, 
 
     if name is not None:
         files_list = get_files(token, name)
+    elif file is not None:
+        files_list = file
 
     env_vars = {
         'MESSAGE': message,

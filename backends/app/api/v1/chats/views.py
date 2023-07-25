@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import CursorPagination
 from django.db import transaction
+from apps.chats.tasks import send_message
 from apps.chats.models import Message, Chat
 from apps.bots.models import Bot
 from .serializers import ChatSerializer, MessageSerializer
@@ -12,6 +13,7 @@ from apps.chats.models import BotUsers
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.db.models import Subquery, OuterRef, When, Case, Value, CharField
 
 
 class WebHooks(APIView):
@@ -93,13 +95,6 @@ class WebHooks(APIView):
                 }
             }
         )
-
-        # try:
-        #     send_message.delay(
-        #         user_id=chat.expert.telegram_id, message=text, token=os.environ.get('NOTIFICATION_TOKEN'))
-        # except:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
-
         return Response(status=status.HTTP_200_OK)
 
         # return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -191,9 +186,23 @@ class ChatsViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    @transaction.atomic
     def list(self, request, *args, **kwargs):
+        last_message = Message.objects.filter(
+            chat=OuterRef('pk')).annotate(message_type=Case(
+                When(text__isnull=False, then=Value('text')),
+                When(document__isnull=False, then=Value('document')),
+                When(photo__isnull=False, then=Value('photo')),
+                When(video__isnull=False, then=Value('video')),
+                default=Value('unknown'),
+                output_field=CharField())).order_by('-time')[:1]
 
-        queryset = Chat.objects.filter(expert=request.user, is_active=True)
+        queryset = Chat.objects.filter(expert=request.user, is_active=True).annotate(
+            last_message_type=Subquery(
+                last_message.values('message_type')),
+            last_message_text=Subquery(last_message.values(
+                'text')), is_author=last_message.values('is_author'), is_bot=last_message.values('is_bot'), time=last_message.values('time'), status=last_message.values('is_read'))
+
         if queryset.exists():
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -255,8 +264,21 @@ class MessageViewSet(viewsets.ModelViewSet):
 
             chat.messages.add(serializer.data.get('id'))
             chat.save()
+            token = chat.user.bot.token
+            message = Message.objects.get(id=serializer.data.get('id'))
 
-            data = {"message_id": serializer.data.get('id'), "name": serializer.data.get(
-                'video') or serializer.data.get('photo')}
+            serializer = self.get_serializer(message)
 
-            return Response(data, status=status.HTTP_200_OK)
+            if message.document:
+                file = [os.environ.get(
+                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.document.url]
+            elif message.video:
+                file = [os.environ.get(
+                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.video.url]
+            else:
+                file = [os.environ.get(
+                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.photo.url]
+
+            send_message.delay(
+                user_id=chat_id, message="", token=token, file=file)
+            return Response(serializer.data)

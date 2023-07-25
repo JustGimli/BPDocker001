@@ -18,7 +18,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         try:
             queryset = User.objects.select_related('account__balance')\
-                .values('first_name', 'last_name', 'surname', 'id', 'email', balance=F('account__balance'))\
+                .values('first_name', 'last_name', 'surname', 'id', 'email', 'phone', 'status', balance=F('account__balance'))\
                 .get(email=request.user)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)

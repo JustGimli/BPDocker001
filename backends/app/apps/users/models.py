@@ -19,6 +19,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(_('is super user'), default=False)
     is_active = models.BooleanField(_('active'), default=True)
     oferta = models.BooleanField(_('accepted'), default=True)
+    status = models.BooleanField(_('status'), default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name", "surname"]

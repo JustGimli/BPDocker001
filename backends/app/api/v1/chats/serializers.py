@@ -5,6 +5,11 @@ from apps.chats.models import Chat, Message
 
 
 class ChatSerializer(serializers.ModelSerializer):
+    last_message_type = serializers.CharField(read_only=True, required=False)
+    last_message_text = serializers.CharField(read_only=True, required=False)
+    is_author = serializers.BooleanField(required=False)
+    is_bot = serializers.BooleanField(required=False)
+    time = serializers.DateTimeField(read_only=True, required=False)
     first_name = serializers.CharField(
         source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
@@ -19,6 +24,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Message
         fields = '__all__'

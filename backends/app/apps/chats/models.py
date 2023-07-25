@@ -4,7 +4,7 @@ from apps.botusers.models import BotUsers
 
 
 class Message(models.Model):
-    text = models.CharField(max_length=512, default="", blank=True)
+    text = models.CharField(max_length=512, null=True, blank=True)
     document = models.FileField(
         upload_to='messages/%Y/', blank=True, null=True)
     photo = models.ImageField(upload_to='messages/%Y/', blank=True, null=True)

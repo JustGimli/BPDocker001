@@ -57,7 +57,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             "is_author": message.is_author
                         },
                         "data": message.text,
-                        "type": message.type,
+                        "type": "text",
                         "chat": chat_id
                     }
 
