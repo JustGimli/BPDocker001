@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c7+610)$6xd6(r&f*5925w^xnirad!d6k%up^o2^titrm2$$$('
 
 
-DEBUG = os.environ.get('DEBUG', default=True)
+DEBUG = os.environ.get('DEBUG', default=False)
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -41,8 +41,8 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'daphne',
     "corsheaders",
-    # 'jet.dashboard',
-    # 'jet',
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'rest_framework',
     'djoser',
     'django_celery_results',
@@ -227,6 +227,6 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'help@botpilot.ru'
 EMAIL_HOST_PASSWORD = '4vusP41A2fNTdtgRC8bg'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "БотПилот <help@botpilot.ru>"
 
 # EMAIL_HOST_PASSWORD = 'gA?R2YIpuyh5'

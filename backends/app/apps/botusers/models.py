@@ -21,6 +21,8 @@ class BotUsers(models.Model):
             models.Index(fields=['bot', 'username']),
         ]
 
+    def update_user(username, bot, **kwargs):
+        BotUsers.objects.filter(username=username, bot=bot).update(**kwargs)
 
 # class BotUsersStat(models.Model):
 #     total_messages_recieved = models.PositiveIntegerField(default=0)

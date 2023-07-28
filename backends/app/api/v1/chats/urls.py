@@ -8,5 +8,6 @@ urlpatterns = [
     path('update/', ChatsViewSet.as_view({'patch': 'update'})),
     path("create/", ChatsViewSet.as_view({'post': 'create'})),
     path('messages/<int:chat_id>/', MessageViewSet.as_view({'get': 'list'})),
-    path("messages/create/", MessageViewSet.as_view({'post': 'create'}))
+    path("messages/create/", MessageViewSet.as_view({'post': 'create'})),
+    path("messages/update/", MessageViewSet.as_view({'patch': 'update'}))
 ]
