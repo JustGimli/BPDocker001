@@ -16,9 +16,10 @@ class ActivationEmail(BaseEmailMessage):
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
         context["url"] = settings.ACTIVATION_URL.format(**context)
-        context["domain"] = "localhost:3000"  # Your site domain
+        context["domain"] = os.environ.get(
+            'SITE_DOMAIN', 'botpilot.ru')  # Your site domain
         # Your site protocol e.g. ("http", "https")
-        context["protocol"] = "http"
+        context["protocol"] = "https"
         return context
 
 
