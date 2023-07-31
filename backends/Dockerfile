@@ -21,8 +21,10 @@ RUN pip install --upgrade pip
 
 
 COPY req.txt .
+COPY venv .
 
-RUN pip install -r req.txt
+RUN source venv/bin/activate
+
 # RUN pip uninstall -y channels
 
 ARG CACHEBUST=1
