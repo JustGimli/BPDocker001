@@ -1,89 +1,84 @@
 services:
-  nginx: 
-    image: nginx:1.25-alpine
-    
-    restart: always
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/botpilot.ru.crt:/etc/nginx/ssl/botpilot.ru.crt
-      - ./nginx/botpilot.ru.key:/etc/nginx/ssl/botpilot.ru.key
-      - ./nginx/ca_bundle.crt:/etc/nginx/ssl/ca_bundle.crt
-      - django:/var/www/html
-      - ./front/build/:/var/www/html
-      - media:/home/app/media
-    depends_on:
-      - server
-    
-  server: 
-    restart: unless-stopped
-    build:  
-      context: ./backends/
-      dockerfile: Dockerfile
-    
-    entrypoint: ./api.sh
-    volumes:
-      - django:/home/app/static
-      - media:/home/app/media
-    ports:
-      - 8000:8000
-    depends_on:
-      - redis
-    
-    
+    nginx:
+        image: nginx:1.25-alpine
 
-  worker:
-      restart: always
-      build:
-          context: ./backends/
-          dockerfile: Dockerfile
-      entrypoint: ./celery.sh
-      volumes:
-          - django:/home/app/media 
-          - /var/run/docker.sock:/var/run/docker.sock
-      
-      ports:
-        - 8001:8001
-      depends_on:
-          - server
-          - redis
-    
-  sockets:
-    restart: unless-stopped
-    build:  
-      context: ./backends/
-      dockerfile: Dockerfile
-    
-    entrypoint: ./sockets.sh
-    depends_on:
-      - redis
+        restart: always
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx/botpilot.ru.crt:/etc/nginx/ssl/botpilot.ru.crt
+            - ./nginx/botpilot.ru.key:/etc/nginx/ssl/botpilot.ru.key
+            - ./nginx/ca_bundle.crt:/etc/nginx/ssl/ca_bundle.crt
+            - django:/var/www/html
+            - ./front/build/:/var/www/html
+            - media:/home/app/media
+        depends_on:
+            - server
 
-  redis:
-    restart: always
-    image: redis:7.0.11-alpine 
-    expose:
-        - 6379
+    server:
+        restart: unless-stopped
+        build:
+            context: ./backends/
+            dockerfile: Dockerfile
 
+        entrypoint: ./api.sh
+        volumes:
+            - django:/home/app/static
+            - media:/home/app/media
+        ports:
+            - 8000:8000
+        depends_on:
+            - redis
 
-  db:
-    image: postgres:13.0-alpine
-    restart: unless-stopped
-    volumes:
-        - postgres_data:/var/lib/postgresql/data/
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-        - 5432  
+    worker:
+        restart: always
+        build:
+            context: ./backends/
+            dockerfile: Dockerfile
+        entrypoint: ./celery.sh
+        volumes:
+            - django:/home/app/media
+            - /var/run/docker.sock:/var/run/docker.sock
+
+        ports:
+            - 8001:8001
+        depends_on:
+            - server
+            - redis
+
+    sockets:
+        restart: unless-stopped
+        build:
+            context: ./backends/
+            dockerfile: Dockerfile
+
+        entrypoint: ./sockets.sh
+        depends_on:
+            - server
+            - redis
+
+    redis:
+        restart: always
+        image: redis:7.0.11-alpine
+        expose:
+            - 6379
+
+    db:
+        image: postgres:13.0-alpine
+        restart: unless-stopped
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        ports:
+            - 5432
 
 volumes:
-  django: {}
-  postgres_data: {}
-  front: {}
-  media: {}
-
-
-  
+    django: {}
+    postgres_data: {}
+    front: {}
+    media: {}
