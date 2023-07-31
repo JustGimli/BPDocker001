@@ -8,11 +8,18 @@ class ConsultationSerializer(serializers.ModelSerializer):
         model = Consultation
 
 
+class ReduceConsultationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Consultation
+        fields = ['end_time']
+
+
 class ScenarioSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = '__all__'
         model = Scenario
+
 
 class ScenarioSerializerRedused(serializers.ModelSerializer):
     bot_name = serializers.CharField(source='bot__name')
@@ -23,4 +30,3 @@ class ScenarioSerializerRedused(serializers.ModelSerializer):
     class Meta:
         fields = ['name_list',  'date_update', 'bot_name', 'bot_id']
         model = Scenario
-        

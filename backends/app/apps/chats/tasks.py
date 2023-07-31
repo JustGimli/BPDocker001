@@ -1,5 +1,6 @@
 import os
 import docker
+from datetime import timedelta
 from celery import shared_task
 
 from apps.bots.tasks import check_container_exists
@@ -10,10 +11,11 @@ def get_files(token: str, name: str):
     try:
         scenario = Scenario.objects.get(name=name, bot__token=token)
         files = scenario.files.all().first()
+        duration = scenario.duration
 
-        return os.environ.get('URL_PATH', "https://botpilot.ru/api/")[:-1] + files.file.url
+        return os.environ.get('URL_PATH', "https://botpilot.ru/api/")[:-1] + files.file.url, duration
     except Scenario.DoesNotExist:
-        return ""
+        return "", timedelta(days=5)
 
 
 @shared_task()
@@ -24,8 +26,10 @@ def send_message(user_id, message, token, name=None, cons=False, username=None, 
 
     files_list = ''
 
+    duration = timedelta(days=5)
+
     if name is not None:
-        files_list = get_files(token, name)
+        files_list, duration = get_files(token, name)
     elif file is not None:
         files_list = file
 
@@ -37,7 +41,8 @@ def send_message(user_id, message, token, name=None, cons=False, username=None, 
         'USERNAME': username,
         'CONS': cons,
         'SCENARIO': scenario_id,
-        'URL_PATH': os.environ.get('URL_PATH', "https://botpilot.ru/api/")
+        'URL_PATH': os.environ.get('URL_PATH', "https://botpilot.ru/api/"),
+        "END_TIME": duration.total_seconds()
     }
 
     data = {}

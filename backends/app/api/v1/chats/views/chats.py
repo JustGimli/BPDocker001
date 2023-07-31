@@ -14,7 +14,7 @@ from apps.chats.models import BotUsers
 
 class ChatsViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.select_related(
-        'user__first_name', 'user__last_name', 'user__phone', 'user__username', 'user__photo')
+        'user__first_name', 'user__last_name', 'user__phone', 'user__username', 'user__photo', "user__surname")
     permission_classes = [AllowAny]
     serializer_class = ChatSerializer
 

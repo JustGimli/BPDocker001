@@ -45,6 +45,7 @@ def generate_payment_link(
     merchant_login: str,  # Merchant login
     merchant_password_1: str,  # Merchant password
     cost: decimal,  # Cost of goods, RU
+    receipt: dict,
     number: int | str,  # Invoice number
     description: str,  # Description of the purchase
     is_test=0,
@@ -59,6 +60,7 @@ def generate_payment_link(
         merchant_login,
         cost,
         number,
+        receipt,
         merchant_password_1,
         *data
     )
@@ -66,7 +68,7 @@ def generate_payment_link(
     data = {
         'MerchantLogin': merchant_login,
         'OutSum': cost,
-        # 'InvId': number,
+        "Receipt": receipt,
         'Description': description,
         **kwargs,
         'IsTest': is_test,

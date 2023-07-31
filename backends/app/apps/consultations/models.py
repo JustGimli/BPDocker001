@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
@@ -33,7 +35,7 @@ class Consultation(models.Model):
     user = models.ForeignKey(BotUsers, on_delete=models.CASCADE)
     expert = models.ForeignKey(User, on_delete=models.CASCADE)
     start_time = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField(auto_now=True)
+    end_time = models.DateTimeField()
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
 
     class Meta:

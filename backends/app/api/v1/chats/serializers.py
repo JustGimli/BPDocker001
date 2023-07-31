@@ -17,6 +17,7 @@ class ChatSerializer(serializers.ModelSerializer):
     params = serializers.JSONField(source='user.params', required=False)
     username = serializers.CharField(source='user.username', required=False)
     photo = serializers.FileField(source='user.photo', required=False)
+    surname = serializers.CharField(source='user.surname', required=False)
 
     class Meta:
         model = Chat

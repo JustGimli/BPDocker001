@@ -1,3 +1,4 @@
+from datetime import timedelta, datetime
 from rest_framework import generics, viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -104,12 +105,14 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class ConsultationViewSet(generics.CreateAPIView):
+class ConsultationCreateApiView(generics.CreateAPIView):
     queryset = Consultation.objects.all()
     permission_classes = [AllowAny]
     serializer_class = ConsultationSerializer
 
     def create(self, request, *args, **kwargs):
+        seconds = float(request.data.get('end_time'))
+        end_time = datetime.now() + timedelta(seconds=(seconds))
 
         try:
             bot = Bot.objects.get(token=request.data.get('token', None))
@@ -136,9 +139,22 @@ class ConsultationViewSet(generics.CreateAPIView):
         data = request.data.copy()
         data.update({"user": user_id})
         data.update({"expert": expert_id})
-        # data.update({"end_time": })
+        data.update({"end_time": end_time})
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class ConsultationViewSet(viewsets.ModelViewSet):
+    def list(self, request, user, *args, **kwargs):
+        try:
+            queryset = Consultation.objects.filter(
+                expert=request.user, user_id=user).first()
+        except Consultation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ConsultationSerializer(queryset)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

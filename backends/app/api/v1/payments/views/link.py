@@ -64,8 +64,17 @@ def getPaymentsLink(request, *args, **kwargs):
         return Response(data={'error': 'request must contianer a bot token an username in body'},
                         status=status.HTTP_400_BAD_REQUEST)
 
+    receipt = {
+        "items": [
+            {"name": name,
+             "quantity": 1,
+             "sum": cost,
+             "payment_method": "full_prepayment", }
+        ]
+    }
+
     link = generate_payment_link(merchant_login=os.environ.get('MERCHANT_LOGIN'),
-                                 merchant_password_1=os.environ.get('MERCHANT_PASSWORD_1'), cost=cost, description=description,
+                                 merchant_password_1=os.environ.get('MERCHANT_PASSWORD_1'), cost=cost, description=description, receipt=receipt,
                                  number="", is_test=os.environ.get('ROBOKASSATEST'), shp_consultation=consultation_id, shp_id=bot,   shp_name=name,
                                  shp_userId=user_id, shp_username=username)
 

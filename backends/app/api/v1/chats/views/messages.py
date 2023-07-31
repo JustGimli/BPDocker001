@@ -65,14 +65,14 @@ class MessageViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(message)
 
             if message.document:
-                file = [os.environ.get(
-                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.document.url]
+                file = os.environ.get(
+                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.document.url
             elif message.video:
-                file = [os.environ.get(
-                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.video.url]
+                file = os.environ.get(
+                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.video.url
             else:
-                file = [os.environ.get(
-                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.photo.url]
+                file = os.environ.get(
+                    "URL_PATH", "https://botpilot.ru/api/")[:-1] + message.photo.url
 
             send_message.delay(
                 user_id=chat_id, message="", token=token, file=file)
