@@ -13,7 +13,6 @@ services:
             - ./nginx/ca_bundle.crt:/etc/nginx/ssl/ca_bundle.crt
             - media:/var/www/html/media
             - ./front/build/:/var/www/html
-            - media:/home/app/media
         depends_on:
             - server
 
