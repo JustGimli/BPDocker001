@@ -28,7 +28,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     status = models.BooleanField(_('verification_status'), default=False)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["first_name"]
+    REQUIRED_FIELDS = ["first_name", "phone"]
 
     objects = UserManger()
 

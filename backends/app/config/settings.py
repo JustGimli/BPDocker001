@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c7+610)$6xd6(r&f*5925w^xnirad!d6k%up^o2^titrm2$$$('
 
 
-DEBUG = bool(os.environ.get('DEBUG', default=False))
+DEBUG = False
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -41,8 +41,6 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'daphne',
     "corsheaders",
-    # 'jet.dashboard',
-    # 'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    # 'debug_toolbar',
     'rest_framework',
     'djoser',
     'django_celery_results',
