@@ -106,7 +106,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
 
 
 class ConsultationCreateApiView(generics.CreateAPIView):
-    queryset = Consultation.objects.all()
+    queryset = Consultation.objects.select_related("scenario")
     permission_classes = [AllowAny]
     serializer_class = ConsultationSerializer
 
@@ -136,10 +136,19 @@ class ConsultationCreateApiView(generics.CreateAPIView):
             text = "admin does not exist"
             return Response(data=text, status=status.HTTP_404_NOT_FOUND)
 
+        try:
+            scenario_data = Scenario.objects.values("description").get(
+                pk=request.data.get('scenario', None))
+        except Scenario.DoesNotExist:
+            text = "scenario does not exist"
+            return Response(data=text, status=status.HTTP_404_NOT_FOUND)
+
         data = request.data.copy()
         data.update({"user": user_id})
         data.update({"expert": expert_id})
         data.update({"end_time": end_time})
+        data.update({"start_message": scenario_data.get("start_message")})
+
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

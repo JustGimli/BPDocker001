@@ -3,6 +3,9 @@ from apps.consultations.models import Consultation, Scenario
 
 
 class ConsultationSerializer(serializers.ModelSerializer):
+    start_message = serializers.CharField(
+        source='scenario.start_message', max_length=512, required=False)
+
     class Meta:
         fields = '__all__'
         model = Consultation

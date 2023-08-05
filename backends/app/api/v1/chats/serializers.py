@@ -10,6 +10,7 @@ class ChatSerializer(serializers.ModelSerializer):
     is_author = serializers.BooleanField(required=False)
     is_bot = serializers.BooleanField(required=False)
     time = serializers.DateTimeField(read_only=True, required=False)
+    status = serializers.BooleanField(required=False)
     first_name = serializers.CharField(
         source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)

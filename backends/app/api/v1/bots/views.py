@@ -117,8 +117,24 @@ class BotSettingsView(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_200_OK)
 
-    def update(self, request, id, *args, **kwargs):
-        pass
+    def update(self, request, pk, *args, **kwargs):
+        try:
+            instance = BotSettings.objects.get(
+                bot_id=pk, bot__admin=request.user)
+        except BotSettings.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 
 """

@@ -10,6 +10,7 @@ from api.v1.chats.serializers import ChatSerializer
 from apps.chats.models import Message, Chat
 from apps.bots.models import Bot
 from apps.chats.models import BotUsers
+from apps.consultations.models import Consultation
 
 
 class ChatsViewSet(viewsets.ModelViewSet):
@@ -82,11 +83,14 @@ class ChatsViewSet(viewsets.ModelViewSet):
                 default=Value('unknown'),
                 output_field=CharField())).order_by('-time')[:1]
 
+        # consultations = Consultation.objects.filter(expert=request.user)
+
         queryset = Chat.objects.filter(expert=request.user, is_active=True).annotate(
             last_message_type=Subquery(
                 last_message.values('message_type')),
             last_message_text=Subquery(last_message.values(
-                'text')), is_author=last_message.values('is_author'), is_bot=last_message.values('is_bot'), time=last_message.values('time'), status=last_message.values('is_read'))
+                'text')), is_author=last_message.values('is_author'), is_bot=last_message.values('is_bot'),
+            time=last_message.values('time'), status=last_message.values('is_read'))
 
         if queryset.exists():
             serializer = self.get_serializer(queryset, many=True)
