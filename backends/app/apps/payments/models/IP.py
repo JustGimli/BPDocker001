@@ -12,3 +12,7 @@ class IP(models.Model):
     bank_inn = models.CharField(max_length=32)
     bank_bic = models.CharField(max_length=64)
     cor_acc = models.CharField(max_length=128)
+
+    @classmethod
+    def get_by_user(cls, user):
+        return cls.objects.get(user=user)
